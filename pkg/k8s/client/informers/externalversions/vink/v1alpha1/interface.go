@@ -24,12 +24,16 @@ import (
 
 // Interface provides access to all the informers in this group version.
 type Interface interface {
-	// Templates returns a TemplateInformer.
-	Templates() TemplateInformer
 	// TemplateInstances returns a TemplateInstanceInformer.
 	TemplateInstances() TemplateInstanceInformer
+	// Vinks returns a VinkInformer.
+	Vinks() VinkInformer
+	// VirtualMachineClaims returns a VirtualMachineClaimInformer.
+	VirtualMachineClaims() VirtualMachineClaimInformer
 	// VirtualMachineSummaries returns a VirtualMachineSummaryInformer.
 	VirtualMachineSummaries() VirtualMachineSummaryInformer
+	// VirtualMachineTemplates returns a VirtualMachineTemplateInformer.
+	VirtualMachineTemplates() VirtualMachineTemplateInformer
 }
 
 type version struct {
@@ -43,17 +47,27 @@ func New(f internalinterfaces.SharedInformerFactory, namespace string, tweakList
 	return &version{factory: f, namespace: namespace, tweakListOptions: tweakListOptions}
 }
 
-// Templates returns a TemplateInformer.
-func (v *version) Templates() TemplateInformer {
-	return &templateInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
-}
-
 // TemplateInstances returns a TemplateInstanceInformer.
 func (v *version) TemplateInstances() TemplateInstanceInformer {
 	return &templateInstanceInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
+// Vinks returns a VinkInformer.
+func (v *version) Vinks() VinkInformer {
+	return &vinkInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
+}
+
+// VirtualMachineClaims returns a VirtualMachineClaimInformer.
+func (v *version) VirtualMachineClaims() VirtualMachineClaimInformer {
+	return &virtualMachineClaimInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
+}
+
 // VirtualMachineSummaries returns a VirtualMachineSummaryInformer.
 func (v *version) VirtualMachineSummaries() VirtualMachineSummaryInformer {
 	return &virtualMachineSummaryInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
+}
+
+// VirtualMachineTemplates returns a VirtualMachineTemplateInformer.
+func (v *version) VirtualMachineTemplates() VirtualMachineTemplateInformer {
+	return &virtualMachineTemplateInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }

@@ -1,0 +1,170 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: rook-ceph-cluster
+  namespace: vink
+spec:
+  repo: https://kubevm-io.github.io/helm-charts
+  chart: rook-ceph-cluster
+  targetNamespace: rook-ceph
+  createNamespace: true
+  valuesContent: |-
+    toolbox:
+      enabled: true
+      resources:
+        requests:
+          cpu: "0"
+          memory: "0"
+    cephClusterSpec:
+      crashCollector:
+        disable: false
+      mon:
+        count: 1
+        allowMultiplePerNode: true
+      mgr:
+        count: 1
+        allowMultiplePerNode: true
+      resources:
+        mgr:
+          limits:
+            memory: 3Gi
+          requests:
+            cpu: "0"
+            memory: "0"
+        mon:
+          requests:
+            cpu: "0"
+            memory: "0"
+        osd:
+          requests:
+            cpu: "0"
+            memory: "0"
+        prepareosd:
+          requests:
+            cpu: "0"
+            memory: "0"
+        mgr-sidecar:
+          requests:
+            cpu: "0"
+            memory: "0"
+        crashcollector:
+          requests:
+            cpu: "0"
+            memory: "0"
+        logcollector:
+          requests:
+            cpu: "0"
+            memory: "0"
+        cleanup:
+          requests:
+            cpu: "0"
+            memory: "0"
+        exporter:
+          requests:
+            cpu: "0"
+            memory: "0"
+    cephFileSystems:
+      - name: ceph-filesystem
+        spec:
+          metadataPool:
+            replicated:
+              size: 1
+          dataPools:
+            - failureDomain: host
+              replicated:
+                size: 1
+              name: data0
+          metadataServer:
+            activeCount: 1
+            activeStandby: true
+            resources:
+              limits:
+                memory: "0"
+              requests:
+                cpu: "0"
+                memory: "0"
+            priorityClassName: system-cluster-critical
+        storageClass:
+          enabled: true
+          isDefault: false
+          name: ceph-filesystem
+          pool: data0
+          reclaimPolicy: Delete
+          allowVolumeExpansion: true
+          volumeBindingMode: Immediate
+          annotations: {}
+          labels: {}
+          mountOptions: []
+          parameters:
+            csi.storage.k8s.io/provisioner-secret-name: rook-csi-cephfs-provisioner
+            csi.storage.k8s.io/provisioner-secret-namespace: rook-ceph
+            csi.storage.k8s.io/controller-expand-secret-name: rook-csi-cephfs-provisioner
+            csi.storage.k8s.io/controller-expand-secret-namespace: rook-ceph
+            csi.storage.k8s.io/node-stage-secret-name: rook-csi-cephfs-node
+            csi.storage.k8s.io/node-stage-secret-namespace: rook-ceph
+            csi.storage.k8s.io/fstype: ext4
+    cephObjectStores:
+      - name: ceph-objectstore
+        spec:
+          metadataPool:
+            failureDomain: host
+            replicated:
+              size: 1
+          dataPool:
+            failureDomain: host
+            erasureCoded:
+              dataChunks: 2
+              codingChunks: 1
+            parameters:
+              bulk: "true"
+          preservePoolsOnDelete: true
+          gateway:
+            port: 80
+            resources:
+              limits:
+                memory: "0"
+              requests:
+                cpu: "0"
+                memory: "0"
+            instances: 1
+            priorityClassName: system-cluster-critical
+        storageClass:
+          enabled: false
+          name: ceph-bucket
+          reclaimPolicy: Delete
+          volumeBindingMode: Immediate
+          annotations: {}
+          labels: {}
+          parameters:
+            region: us-east-1
+        ingress:
+          enabled: false
+    cephBlockPools:
+      - name: ceph-blockpool
+        spec:
+          failureDomain: host
+          replicated:
+            size: 1
+        storageClass:
+          enabled: true
+          name: ceph-block
+          annotations: {}
+          labels: {}
+          isDefault: true
+          reclaimPolicy: Delete
+          allowVolumeExpansion: true
+          volumeBindingMode: Immediate
+          mountOptions: []
+          allowedTopologies: []
+          parameters:
+            imageFormat: "2"
+            imageFeatures: layering
+            csi.storage.k8s.io/provisioner-secret-name: rook-csi-rbd-provisioner
+            csi.storage.k8s.io/provisioner-secret-namespace: rook-ceph
+            csi.storage.k8s.io/controller-expand-secret-name: rook-csi-rbd-provisioner
+            csi.storage.k8s.io/controller-expand-secret-namespace: rook-ceph
+            csi.storage.k8s.io/node-stage-secret-name: rook-csi-rbd-node
+            csi.storage.k8s.io/node-stage-secret-namespace: rook-ceph
+            csi.storage.k8s.io/fstype: ext4
+    monitoring:
+      enabled: true

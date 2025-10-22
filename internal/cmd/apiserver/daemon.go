@@ -45,6 +45,8 @@ func (dm *Daemon) Execute(ctx context.Context) error {
 	_ = dm.informerFactory.Event()
 	_ = dm.informerFactory.Namespace()
 	_ = dm.informerFactory.Node()
+	// _ = dm.informerFactory.Template()
+	// _ = dm.informerFactory.TemplateInstance()
 
 	dm.informerFactory.Start(ctx.Done())
 	dm.informerFactory.WaitForCacheSync(ctx.Done())

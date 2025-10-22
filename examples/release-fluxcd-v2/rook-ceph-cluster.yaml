@@ -1,0 +1,262 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: rook-ceph-cluster
+  namespace: vink
+spec:
+  dependsOn:
+    - name: rook-ceph
+      namespace: vink
+  interval: 10m
+  timeout: 10m
+  chart:
+    spec:
+      chart: rook-ceph-cluster
+      sourceRef:
+        kind: HelmRepository
+        name: vink
+        namespace: vink
+  targetNamespace: rook-ceph
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    toolbox:
+      # -- Enable Ceph debugging pod deployment. See [toolbox](../Troubleshooting/ceph-toolbox.md)
+      enabled: true
+      # -- Toolbox resources
+      resources:
+        requests:
+          cpu: "0"
+          memory: "0"
+
+    cephClusterSpec:
+      crashCollector:
+        disable: false
+
+      mon:
+        # Set the number of mons to be started. Generally recommended to be 3.
+        # For highest availability, an odd number of mons should be specified.
+        count: 1
+        # The mons should be on unique nodes. For production, at least 3 nodes are recommended for this reason.
+        # Mons should only be allowed on the same node for test environments where data loss is acceptable.
+        allowMultiplePerNode: true
+
+      mgr:
+        # When higher availability of the mgr is needed, increase the count to 2.
+        # In that case, one mgr will be active and one in standby. When Ceph updates which
+        # mgr is active, Rook will update the mgr services to match the active mgr.
+        count: 1
+        allowMultiplePerNode: true
+
+      resources:
+        mgr:
+          limits:
+            memory: 3Gi
+          requests:
+            cpu: "0"
+            memory: "0"
+        mon:
+          requests:
+            cpu: "0"
+            memory: "0"
+        osd:
+          requests:
+            cpu: "0"
+            memory: "0"
+        prepareosd:
+          # limits: It is not recommended to set limits on the OSD prepare job
+          #         since it's a one-time burst for memory that must be allowed to
+          #         complete without an OOM kill.  Note however that if a k8s
+          #         limitRange guardrail is defined external to Rook, the lack of
+          #         a limit here may result in a sync failure, in which case a
+          #         limit should be added.  1200Mi may suffice for up to 15Ti
+          #         OSDs ; for larger devices 2Gi may be required.
+          #         cf. https://github.com/rook/rook/pull/11103
+          requests:
+            cpu: "0"
+            memory: "0"
+        mgr-sidecar:
+          requests:
+            cpu: "0"
+            memory: "0"
+        crashcollector:
+          requests:
+            cpu: "0"
+            memory: "0"
+        logcollector:
+          requests:
+            cpu: "0"
+            memory: "0"
+        cleanup:
+          requests:
+            cpu: "0"
+            memory: "0"
+        exporter:
+          requests:
+            cpu: "0"
+            memory: "0"
+
+    cephFileSystems:
+      - name: ceph-filesystem
+        spec:
+          metadataPool:
+            replicated:
+              size: 1
+          dataPools:
+            - failureDomain: host
+              replicated:
+                size: 1
+              # Optional and highly recommended, 'data0' by default, see https://github.com/rook/rook/blob/master/Documentation/CRDs/Shared-Filesystem/ceph-filesystem-crd.md#pools
+              name: data0
+          metadataServer:
+            activeCount: 1
+            activeStandby: true
+            resources:
+              limits:
+                memory: "0"
+              requests:
+                cpu: "0"
+                memory: "0"
+            priorityClassName: system-cluster-critical
+
+        storageClass:
+          enabled: true
+          isDefault: false
+          name: ceph-filesystem
+          # (Optional) specify a data pool to use, must be the name of one of the data pools above, 'data0' by default
+          pool: data0
+          reclaimPolicy: Delete
+          allowVolumeExpansion: true
+          volumeBindingMode: "Immediate"
+          annotations: {}
+          labels: {}
+          mountOptions: []
+          # see https://github.com/rook/rook/blob/master/Documentation/Storage-Configuration/Shared-Filesystem-CephFS/filesystem-storage.md#provision-storage for available configuration
+          parameters:
+            # The secrets contain Ceph admin credentials.
+            csi.storage.k8s.io/provisioner-secret-name: rook-csi-cephfs-provisioner
+            csi.storage.k8s.io/provisioner-secret-namespace: rook-ceph
+            csi.storage.k8s.io/controller-expand-secret-name: rook-csi-cephfs-provisioner
+            csi.storage.k8s.io/controller-expand-secret-namespace: rook-ceph
+            csi.storage.k8s.io/node-stage-secret-name: rook-csi-cephfs-node
+            csi.storage.k8s.io/node-stage-secret-namespace: rook-ceph
+            # Specify the filesystem type of the volume. If not specified, csi-provisioner
+            # will set default as `ext4`. Note that `xfs` is not recommended due to potential deadlock
+            # in hyperconverged settings where the volume is mounted on the same node as the osds.
+            csi.storage.k8s.io/fstype: ext4
+
+    cephObjectStores:
+      - name: ceph-objectstore
+        spec:
+          metadataPool:
+            failureDomain: host
+            replicated:
+              size: 1
+          dataPool:
+            failureDomain: host
+            erasureCoded:
+              dataChunks: 2
+              codingChunks: 1
+            parameters:
+              bulk: "true"
+          preservePoolsOnDelete: true
+          gateway:
+            port: 80
+            resources:
+              limits:
+                memory: "0"
+              requests:
+                cpu: "0"
+                memory: "0"
+            instances: 1
+            priorityClassName: system-cluster-critical
+            # opsLogSidecar:
+            #   resources:
+            #     limits:
+            #       memory: "100Mi"
+            #     requests:
+            #       cpu: "100m"
+            #       memory: "40Mi"
+        storageClass:
+          enabled: false
+          name: ceph-bucket
+          reclaimPolicy: Delete
+          volumeBindingMode: "Immediate"
+          annotations: {}
+          labels: {}
+          parameters:
+            region: us-east-1
+        ingress:
+          enabled: false
+
+    cephBlockPools:
+      - name: ceph-blockpool
+        # see https://github.com/rook/rook/blob/master/Documentation/CRDs/Block-Storage/ceph-block-pool-crd.md#spec for available configuration
+        spec:
+          failureDomain: host
+          replicated:
+            size: 1
+          # Enables collecting RBD per-image IO statistics by enabling dynamic OSD performance counters. Defaults to false.
+          # For reference: https://docs.ceph.com/docs/latest/mgr/prometheus/#rbd-io-statistics
+          # enableRBDStats: true
+        storageClass:
+          enabled: true
+          name: ceph-block
+          annotations: {}
+          labels: {}
+          isDefault: true
+          reclaimPolicy: Delete
+          allowVolumeExpansion: true
+          volumeBindingMode: "Immediate"
+          mountOptions: []
+          # see https://kubernetes.io/docs/concepts/storage/storage-classes/#allowed-topologies
+          allowedTopologies: []
+          #        - matchLabelExpressions:
+          #            - key: rook-ceph-role
+          #              values:
+          #                - storage-node
+          # see https://github.com/rook/rook/blob/master/Documentation/Storage-Configuration/Block-Storage-RBD/block-storage.md#provision-storage for available configuration
+          parameters:
+            # (optional) mapOptions is a comma-separated list of map options.
+            # For krbd options refer
+            # https://docs.ceph.com/docs/latest/man/8/rbd/#kernel-rbd-krbd-options
+            # For nbd options refer
+            # https://docs.ceph.com/docs/latest/man/8/rbd-nbd/#options
+            # mapOptions: lock_on_read,queue_depth=1024
+
+            # (optional) unmapOptions is a comma-separated list of unmap options.
+            # For krbd options refer
+            # https://docs.ceph.com/docs/latest/man/8/rbd/#kernel-rbd-krbd-options
+            # For nbd options refer
+            # https://docs.ceph.com/docs/latest/man/8/rbd-nbd/#options
+            # unmapOptions: force
+
+            # RBD image format. Defaults to "2".
+            imageFormat: "2"
+
+            # RBD image features, equivalent to OR'd bitfield value: 63
+            # Available for imageFormat: "2". Older releases of CSI RBD
+            # support only the `layering` feature. The Linux kernel (KRBD) supports the
+            # full feature complement as of 5.4
+            imageFeatures: layering
+
+            # These secrets contain Ceph admin credentials.
+            csi.storage.k8s.io/provisioner-secret-name: rook-csi-rbd-provisioner
+            csi.storage.k8s.io/provisioner-secret-namespace: rook-ceph
+            csi.storage.k8s.io/controller-expand-secret-name: rook-csi-rbd-provisioner
+            csi.storage.k8s.io/controller-expand-secret-namespace: rook-ceph
+            csi.storage.k8s.io/node-stage-secret-name: rook-csi-rbd-node
+            csi.storage.k8s.io/node-stage-secret-namespace: rook-ceph
+            # Specify the filesystem type of the volume. If not specified, csi-provisioner
+            # will set default as `ext4`. Note that `xfs` is not recommended due to potential deadlock
+            # in hyperconverged settings where the volume is mounted on the same node as the osds.
+            csi.storage.k8s.io/fstype: ext4
+
+    monitoring:
+      # -- Enable Prometheus integration, will also create necessary RBAC rules to allow Operator to create ServiceMonitors.
+      # Monitoring requires Prometheus to be pre-installed
+      enabled: true

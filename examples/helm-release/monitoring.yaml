@@ -1,0 +1,45 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: monitoring
+  namespace: vink
+spec:
+  repo: https://kubevm-io.github.io/helm-charts
+  chart: kube-prometheus-stack
+  targetNamespace: monitoring
+  createNamespace: true
+  valuesContent: |-
+    alertmanager:
+      enabled: false
+
+    kubeStateMetrics:
+      enabled: true
+
+    prometheus:
+      prometheusSpec:
+        serviceMonitorSelectorNilUsesHelmValues: false
+
+    grafana:
+      grafana.ini:
+        auth.anonymous:
+          enabled: true
+          org_role: Viewer
+        http:
+          enable_cors: true
+          allow_from_origin: "*"
+        server:
+          root_url: /grafana
+          serve_from_sub_path: true
+        security:
+          allow_embedding: true
+
+    prometheus-node-exporter:
+      prometheus:
+        monitor:
+          attachMetadata:
+            node: true
+          relabelings:
+          - action: replace
+            sourceLabels: [__meta_kubernetes_node_name]
+            targetLabel: nodename
+

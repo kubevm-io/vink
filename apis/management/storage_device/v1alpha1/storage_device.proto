@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package vink.kubevm.io.apis.management.storage_device.v1alpha1;
+
+import "types/types.proto";
+import "types/storage_device.proto";
+
+option go_package = "github.com/kubevm.io/vink/apis/management/storage_device/v1alpha1";
+
+service StorageDeviceManagement {
+    rpc List(vink.kubevm.io.apis.types.ListRequest) returns (vink.kubevm.io.apis.types.StorageDeviceList);
+}

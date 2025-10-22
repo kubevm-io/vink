@@ -1,0 +1,52 @@
+apiVersion: vink.kubevm.io/v1alpha1
+kind: VirtualMachineTemplate
+metadata:
+  name: debian
+  namespace: default
+spec:
+  access:
+    console:
+      serial: true
+      vnc: true
+    ssh:
+      enabled: true
+      port: 22
+  compute:
+    cpu:
+      cores: 1
+      overcommitRatio: 4
+      threads: 1
+    memory:
+      overcommitRatio: 2
+      size: 512Mi
+  general:
+    os:
+      name: Debian
+      version: "12"
+    source:
+      http:
+        url: https://cdimage.debian.org/cdimage/cloud/bookworm/latest/debian-12-genericcloud-amd64.qcow2
+    users:
+    - name: root
+      password: dangerous
+      sshKey: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILmJpK7L05UABkE+JL/b5ScWSiWDwHBQUpvtOVF8e/dp
+    - name: hexiaodai
+      password: dangerous
+    - name: hetongxue
+      password: dangerous
+  network:
+    interfaces:
+    - nad: vink/default
+      subnet: vink
+      type: bridge
+  storage:
+    dataDisks:
+    - size: 10Gi
+      storageClass: ceph-block
+    - size: 20Gi
+      storageClass: ceph-block
+    - size: 30Gi
+      storageClass: ceph-block
+    rootDisk:
+      size: 20Gi
+      storageClass: ceph-block

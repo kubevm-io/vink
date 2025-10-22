@@ -121,6 +121,8 @@ func From[T any](o T) schema.GroupVersionResource {
 		return kubeovn.SchemeGroupVersion.WithResource("vlans")
 	case kubeovn.ProviderNetwork, *kubeovn.ProviderNetwork:
 		return kubeovn.SchemeGroupVersion.WithResource("provider-networks")
+	case v1alpha1.VirtualMachineTemplate, *v1alpha1.VirtualMachineTemplate, types.Template, *types.Template:
+		return v1alpha1.SchemeGroupVersion.WithResource("virtualmachinetemplates")
 	}
 
 	return schema.GroupVersionResource{}

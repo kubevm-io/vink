@@ -48,3 +48,23 @@ message OperatingSystem {
 	string name = 1;
 	string version = 2;
 }
+
+message ListRequest {
+    string namespace = 1;
+	string name = 2;
+}
+
+message WatchRequest {
+    string namespace = 1;
+	string name = 2;
+}
+
+message Condition {
+	string type = 1;
+	string status = 2;
+	string reason = 3;
+	string message = 4;
+	string lastTransitionTime = 5;
+	string lastProbeTime = 6;
+	string lastHeartbeatTime = 7;
+}

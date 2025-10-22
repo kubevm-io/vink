@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package vink.kubevm.io.apis.types;
+
+import "types/metadata.proto";
+import "types/types.proto";
+
+option go_package = "github.com/kubevm.io/vink/apis/types";
+
+message VirtualMachineRestore {
+    string kind = 1;
+
+    string apiVersion = 2;
+
+    vink.kubevm.io.apis.types.ObjectMeta metadata = 3;
+
+    VirtualMachineRestoreSpec spec = 4;
+
+    VirtualMachineRestoreStatus status = 5;
+}
+
+message VirtualMachineRestoreList {
+    repeated VirtualMachineRestore items = 1;
+}
+
+message VirtualMachineRestoreSpec {
+    message Reference {
+        string apiGroup = 1;
+        string kind = 2;
+        string name = 3;
+    }
+    Reference target = 1;
+    string virtualMachineSnapshotName = 2;
+}
+
+message VirtualMachineRestoreStatus {
+    bool complete = 1;
+    string restoreTime = 2;
+    repeated vink.kubevm.io.apis.types.Condition conditions = 3;
+}

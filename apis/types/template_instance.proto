@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package vink.kubevm.io.apis.types;
+
+import "types/metadata.proto";
+
+option go_package = "github.com/kubevm.io/vink/apis/types";
+
+message TemplateInstance {
+    string kind = 1;
+
+    string apiVersion = 2;
+
+    vink.kubevm.io.apis.types.ObjectMeta metadata = 3;
+
+    TemplateInstanceSpec spec = 4;
+
+    TemplateInstanceStatus status = 5;
+}
+
+message TemplateInstanceList {
+    repeated TemplateInstance items = 1;
+}
+
+message TemplateInstanceSpec {
+	string template = 1;
+}
+
+message TemplateInstanceStatus {
+	bool applied = 1;
+
+	string reason = 2;
+
+	string virtualMachine = 3;
+}

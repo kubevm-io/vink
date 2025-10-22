@@ -19,8 +19,6 @@ limitations under the License.
 package v1alpha1
 
 import (
-	"net/http"
-
 	v1alpha1 "github.com/kubevm.io/vink/pkg/k8s/apis/vink/v1alpha1"
 	"github.com/kubevm.io/vink/pkg/k8s/client/clientset/versioned/scheme"
 	rest "k8s.io/client-go/rest"
@@ -28,9 +26,11 @@ import (
 
 type VinkV1alpha1Interface interface {
 	RESTClient() rest.Interface
-	TemplatesGetter
 	TemplateInstancesGetter
+	VinksGetter
+	VirtualMachineClaimsGetter
 	VirtualMachineSummariesGetter
+	VirtualMachineTemplatesGetter
 }
 
 // VinkV1alpha1Client is used to interact with features provided by the vink group.
@@ -38,16 +38,24 @@ type VinkV1alpha1Client struct {
 	restClient rest.Interface
 }
 
-func (c *VinkV1alpha1Client) Templates(namespace string) TemplateInterface {
-	return newTemplates(c, namespace)
-}
-
 func (c *VinkV1alpha1Client) TemplateInstances(namespace string) TemplateInstanceInterface {
 	return newTemplateInstances(c, namespace)
 }
 
+func (c *VinkV1alpha1Client) Vinks(namespace string) VinkInterface {
+	return newVinks(c, namespace)
+}
+
+func (c *VinkV1alpha1Client) VirtualMachineClaims(namespace string) VirtualMachineClaimInterface {
+	return newVirtualMachineClaims(c, namespace)
+}
+
 func (c *VinkV1alpha1Client) VirtualMachineSummaries(namespace string) VirtualMachineSummaryInterface {
 	return newVirtualMachineSummaries(c, namespace)
+}
+
+func (c *VinkV1alpha1Client) VirtualMachineTemplates(namespace string) VirtualMachineTemplateInterface {
+	return newVirtualMachineTemplates(c, namespace)
 }
 
 // NewForConfig creates a new VinkV1alpha1Client for the given config.

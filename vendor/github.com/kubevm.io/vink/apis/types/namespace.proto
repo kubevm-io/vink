@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package vink.kubevm.io.apis.types;
+
+import "types/metadata.proto";
+
+option go_package = "github.com/kubevm.io/vink/apis/types";
+
+message Namespace {
+    string kind = 1;
+
+    string apiVersion = 2;
+
+    vink.kubevm.io.apis.types.ObjectMeta metadata = 3;
+
+    NamespaceSpec spec = 4;
+
+    NamespaceStatus status = 5;
+}
+
+message NamespaceList {
+    repeated Namespace items = 1;
+}
+
+message NamespaceSpec {}
+
+message NamespaceStatus {}

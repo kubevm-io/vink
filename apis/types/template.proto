@@ -1,0 +1,183 @@
+syntax = "proto3";
+
+package vink.kubevm.io.apis.types;
+
+import "types/metadata.proto";
+
+option go_package = "github.com/kubevm.io/vink/apis/types";
+
+message Template {
+    string kind = 1;
+
+    string apiVersion = 2;
+
+    vink.kubevm.io.apis.types.ObjectMeta metadata = 3;
+
+    TemplateSpec spec = 4;
+
+    TemplateStatus status = 5;
+}
+
+message TemplateList {
+    repeated Template items = 1;
+}
+
+message TemplateSpec {
+	GeneralSpec general = 1;
+
+	ComputeSpec compute = 2;
+
+	StorageSpec storage = 3;
+
+	NetworkSpec network = 4;
+
+	InitializationSpec initialization = 5;
+
+	AccessSpec access = 6;
+}
+
+message TemplateStatus {}
+
+message GeneralSpec {
+	OperatingSystemSpec os = 1;
+
+	ImageSource source = 2;
+
+	repeated UserSpec users = 3;
+}
+
+message OperatingSystemSpec {
+	string name = 1;
+
+	string version = 2;
+}
+
+message ImageSource {
+	ImageBuiltinSource builtin = 1;
+
+	ImageHTTPSource http = 2;
+
+	ImageS3Source s3 = 3;
+
+	ImageRegistrySource registry = 4;
+
+	ImagePVCSource pvc = 5;
+
+	ImageDataVolumeSource dataVolume = 6;
+}
+
+message ImageBuiltinSource {
+	string distribution = 1;
+
+	string version = 2;
+}
+
+message ImageHTTPSource {
+	string url = 1;
+}
+
+message ImageS3Source {
+	string url = 1;
+}
+
+message ImageRegistrySource {
+	string url = 1;
+}
+
+message ImagePVCSource {
+	string name = 1;
+}
+
+message ImageDataVolumeSource {
+	string name = 1;
+}
+
+message UserSpec {
+	string name = 1;
+
+	optional string password = 2;
+
+	optional string passwordBase64 = 3;
+
+	optional string passwordSecretRef = 4;
+
+	optional string sshKey = 5;
+
+	optional string sshKeyBase64 = 6;
+
+	optional string sshKeySecretRef = 7;
+}
+
+message ComputeSpec {
+	CpuSpec cpu = 1;
+
+	MemorySpec memory = 2;
+}
+
+message CpuSpec {
+	int32 cores = 1;
+
+	int32 threads = 2;
+
+	float overcommitRatio = 3;
+}
+
+message MemorySpec {
+	string size = 1;
+
+	float overcommitRatio = 2;
+}
+
+message StorageSpec {
+	DiskSpec rootDisk = 1;
+
+	repeated DiskSpec dataDisks = 2;
+}
+
+message DiskSpec {
+	string size = 1;
+
+	string storageClass = 2;
+}
+
+message NetworkSpec {
+	repeated NetworkInterface interfaces = 1;
+}
+
+message NetworkInterface {
+	string type = 1;
+
+	string nad = 2;
+
+	string subnet = 3;
+
+	string ipPool = 4;
+}
+
+message InitializationSpec {
+	CloudInitSpec cloudInit = 1;
+}
+
+message CloudInitSpec {
+	string userData = 1;
+
+	string userDataBase64 = 2;
+}
+
+message AccessSpec {
+	SshAccessSpec ssh = 1;
+
+	ConsoleAccessSpec console = 2;
+}
+
+message SshAccessSpec {
+	bool enabled = 1;
+
+	int32 port = 2;
+}
+
+message ConsoleAccessSpec {
+	bool vnc = 1;
+
+	bool serial = 2;
+}

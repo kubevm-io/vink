@@ -1,0 +1,21 @@
+apiVersion: vink.kubevm.io/v1alpha1
+kind: VirtualMachineClaim
+metadata:
+  name: debian
+  namespace: default
+spec:
+  # replicas: 3
+  # pool: true
+  templateRef:
+    namespace: default
+    name: debian
+  ipMacAssignments:
+    - subnet: vink
+      ip: 10.69.0.69
+      mac: 02:00:00:00:00:69
+    - subnet: vink
+      ip: 10.69.0.70
+      mac: 02:00:00:00:00:70
+    - subnet: vink
+      ip: 10.69.0.71
+      mac: 02:00:00:00:00:71

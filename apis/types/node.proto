@@ -2,7 +2,57 @@ syntax = "proto3";
 
 package vink.kubevm.io.apis.types;
 
+import "types/metadata.proto";
+import "types/types.proto";
+
 option go_package = "github.com/kubevm.io/vink/apis/types";
+
+message Node {
+    string kind = 1;
+
+    string apiVersion = 2;
+
+    vink.kubevm.io.apis.types.ObjectMeta metadata = 3;
+
+    NodeSpec spec = 4;
+
+    NodeStatus status = 5;
+}
+
+message NodeList {
+    repeated Node items = 1;
+}
+
+message NodeSpec {
+	string providerID = 1;
+    string podCIDR = 2;
+    repeated string podCIDRs = 3;
+}
+
+message NodeStatus {
+    message Addresse {
+        string type = 1;
+        string address = 2;
+    }
+    message NodeInfo {
+        string architecture = 1;
+        string bootID = 2;
+        string containerRuntimeVersion = 3;
+        string kernelVersion = 4;
+        string kubeProxyVersion = 5;
+        string kubeletVersion = 6;
+        string machineID = 7;
+        string operatingSystem = 8;
+        string osImage = 9;
+        string systemUUID = 10;
+    }
+
+    repeated Addresse addresses = 1;
+    map<string, string> allocatable = 2;
+    map<string, string> capacity = 3;
+    NodeInfo nodeInfo = 4;
+    repeated vink.kubevm.io.apis.types.Condition conditions = 5;
+}
 
 message NodeResourceMetrics {
     float cpu_usage = 1;

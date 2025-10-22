@@ -1,0 +1,10 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: cdi
+  namespace: vink
+spec:
+  repo: https://kubevm-io.github.io/helm-charts
+  chart: cdi
+  targetNamespace: cdi
+  createNamespace: true

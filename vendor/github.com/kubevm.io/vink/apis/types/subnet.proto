@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+package vink.kubevm.io.apis.types;
+
+import "types/metadata.proto";
+import "types/types.proto";
+
+option go_package = "github.com/kubevm.io/vink/apis/types";
+
+message Subnet {
+    string kind = 1;
+
+    string apiVersion = 2;
+
+    vink.kubevm.io.apis.types.ObjectMeta metadata = 3;
+
+    SubnetSpec spec = 4;
+
+    SubnetStatus status = 5;
+}
+
+message SubnetList {
+    repeated Subnet items = 1;
+}
+
+message SubnetSpec {
+    string cidrBlock = 1;
+    bool default = 2;
+    bool enableLb = 3;
+    repeated string excludeIps = 4;
+    string gateway = 5;
+    string gatewayNode = 6;
+    string gatewayType = 7;
+    repeated string namespaces = 8;
+    bool natOutgoing = 9;
+    bool private = 10;
+    string protocol = 11;
+    string provider = 12;
+    string routeTable = 13;
+    string vpc = 14;
+}
+
+message SubnetStatus {
+    string activateGateway = 1;
+    repeated vink.kubevm.io.apis.types.Condition conditions = 2;
+    string dhcpV4OptionsUUID = 3;
+    string mcastQuerierIP = 4;
+    string mcastQuerierMAC = 5;
+    repeated string natOutgoingPolicyRules = 6;
+    string u2oInterconnectionIP = 7;
+    string u2oInterconnectionMAC = 8;
+    string u2oInterconnectionVPC = 9;
+    string v4availableIPrange = 10;
+    int32 v4availableIPs = 11;
+    string v4usingIPrange = 12;
+    int32 v4usingIPs = 13;
+    string v6availableIPrange = 14;
+    int32 v6availableIPs = 15;
+    string v6usingIPrange = 16;
+    int32 v6usingIPs = 17;
+}

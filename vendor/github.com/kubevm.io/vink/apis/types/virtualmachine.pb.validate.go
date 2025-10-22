@@ -35,6 +35,678 @@ var (
 	_ = sort.Sort
 )
 
+// Validate checks the field values on VirtualMachine with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *VirtualMachine) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on VirtualMachine with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in VirtualMachineMultiError,
+// or nil if none found.
+func (m *VirtualMachine) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *VirtualMachine) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Kind
+
+	// no validation rules for ApiVersion
+
+	if all {
+		switch v := interface{}(m.GetMetadata()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, VirtualMachineValidationError{
+					field:  "Metadata",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, VirtualMachineValidationError{
+					field:  "Metadata",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetMetadata()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return VirtualMachineValidationError{
+				field:  "Metadata",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if all {
+		switch v := interface{}(m.GetSpec()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, VirtualMachineValidationError{
+					field:  "Spec",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, VirtualMachineValidationError{
+					field:  "Spec",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetSpec()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return VirtualMachineValidationError{
+				field:  "Spec",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if all {
+		switch v := interface{}(m.GetStatus()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, VirtualMachineValidationError{
+					field:  "Status",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, VirtualMachineValidationError{
+					field:  "Status",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetStatus()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return VirtualMachineValidationError{
+				field:  "Status",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return VirtualMachineMultiError(errors)
+	}
+
+	return nil
+}
+
+// VirtualMachineMultiError is an error wrapping multiple validation errors
+// returned by VirtualMachine.ValidateAll() if the designated constraints
+// aren't met.
+type VirtualMachineMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m VirtualMachineMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m VirtualMachineMultiError) AllErrors() []error { return m }
+
+// VirtualMachineValidationError is the validation error returned by
+// VirtualMachine.Validate if the designated constraints aren't met.
+type VirtualMachineValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e VirtualMachineValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e VirtualMachineValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e VirtualMachineValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e VirtualMachineValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e VirtualMachineValidationError) ErrorName() string { return "VirtualMachineValidationError" }
+
+// Error satisfies the builtin error interface
+func (e VirtualMachineValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sVirtualMachine.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = VirtualMachineValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = VirtualMachineValidationError{}
+
+// Validate checks the field values on VirtualMachineSpec with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *VirtualMachineSpec) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on VirtualMachineSpec with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// VirtualMachineSpecMultiError, or nil if none found.
+func (m *VirtualMachineSpec) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *VirtualMachineSpec) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for RunStrategy
+
+	if all {
+		switch v := interface{}(m.GetTemplate()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, VirtualMachineSpecValidationError{
+					field:  "Template",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, VirtualMachineSpecValidationError{
+					field:  "Template",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetTemplate()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return VirtualMachineSpecValidationError{
+				field:  "Template",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	for idx, item := range m.GetDataVolumeTemplates() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, VirtualMachineSpecValidationError{
+						field:  fmt.Sprintf("DataVolumeTemplates[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, VirtualMachineSpecValidationError{
+						field:  fmt.Sprintf("DataVolumeTemplates[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return VirtualMachineSpecValidationError{
+					field:  fmt.Sprintf("DataVolumeTemplates[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return VirtualMachineSpecMultiError(errors)
+	}
+
+	return nil
+}
+
+// VirtualMachineSpecMultiError is an error wrapping multiple validation errors
+// returned by VirtualMachineSpec.ValidateAll() if the designated constraints
+// aren't met.
+type VirtualMachineSpecMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m VirtualMachineSpecMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m VirtualMachineSpecMultiError) AllErrors() []error { return m }
+
+// VirtualMachineSpecValidationError is the validation error returned by
+// VirtualMachineSpec.Validate if the designated constraints aren't met.
+type VirtualMachineSpecValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e VirtualMachineSpecValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e VirtualMachineSpecValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e VirtualMachineSpecValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e VirtualMachineSpecValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e VirtualMachineSpecValidationError) ErrorName() string {
+	return "VirtualMachineSpecValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e VirtualMachineSpecValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sVirtualMachineSpec.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = VirtualMachineSpecValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = VirtualMachineSpecValidationError{}
+
+// Validate checks the field values on VirtualMachineStatus with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *VirtualMachineStatus) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on VirtualMachineStatus with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// VirtualMachineStatusMultiError, or nil if none found.
+func (m *VirtualMachineStatus) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *VirtualMachineStatus) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Ready
+
+	// no validation rules for PrintableStatus
+
+	// no validation rules for RunStrategy
+
+	// no validation rules for Created
+
+	for idx, item := range m.GetConditions() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, VirtualMachineStatusValidationError{
+						field:  fmt.Sprintf("Conditions[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, VirtualMachineStatusValidationError{
+						field:  fmt.Sprintf("Conditions[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return VirtualMachineStatusValidationError{
+					field:  fmt.Sprintf("Conditions[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	for idx, item := range m.GetVolumeSnapshotStatuses() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, VirtualMachineStatusValidationError{
+						field:  fmt.Sprintf("VolumeSnapshotStatuses[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, VirtualMachineStatusValidationError{
+						field:  fmt.Sprintf("VolumeSnapshotStatuses[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return VirtualMachineStatusValidationError{
+					field:  fmt.Sprintf("VolumeSnapshotStatuses[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return VirtualMachineStatusMultiError(errors)
+	}
+
+	return nil
+}
+
+// VirtualMachineStatusMultiError is an error wrapping multiple validation
+// errors returned by VirtualMachineStatus.ValidateAll() if the designated
+// constraints aren't met.
+type VirtualMachineStatusMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m VirtualMachineStatusMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m VirtualMachineStatusMultiError) AllErrors() []error { return m }
+
+// VirtualMachineStatusValidationError is the validation error returned by
+// VirtualMachineStatus.Validate if the designated constraints aren't met.
+type VirtualMachineStatusValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e VirtualMachineStatusValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e VirtualMachineStatusValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e VirtualMachineStatusValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e VirtualMachineStatusValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e VirtualMachineStatusValidationError) ErrorName() string {
+	return "VirtualMachineStatusValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e VirtualMachineStatusValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sVirtualMachineStatus.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = VirtualMachineStatusValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = VirtualMachineStatusValidationError{}
+
+// Validate checks the field values on VirtualMachineList with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *VirtualMachineList) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on VirtualMachineList with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// VirtualMachineListMultiError, or nil if none found.
+func (m *VirtualMachineList) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *VirtualMachineList) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	for idx, item := range m.GetItems() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, VirtualMachineListValidationError{
+						field:  fmt.Sprintf("Items[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, VirtualMachineListValidationError{
+						field:  fmt.Sprintf("Items[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return VirtualMachineListValidationError{
+					field:  fmt.Sprintf("Items[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return VirtualMachineListMultiError(errors)
+	}
+
+	return nil
+}
+
+// VirtualMachineListMultiError is an error wrapping multiple validation errors
+// returned by VirtualMachineList.ValidateAll() if the designated constraints
+// aren't met.
+type VirtualMachineListMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m VirtualMachineListMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m VirtualMachineListMultiError) AllErrors() []error { return m }
+
+// VirtualMachineListValidationError is the validation error returned by
+// VirtualMachineList.Validate if the designated constraints aren't met.
+type VirtualMachineListValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e VirtualMachineListValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e VirtualMachineListValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e VirtualMachineListValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e VirtualMachineListValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e VirtualMachineListValidationError) ErrorName() string {
+	return "VirtualMachineListValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e VirtualMachineListValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sVirtualMachineList.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = VirtualMachineListValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = VirtualMachineListValidationError{}
+
 // Validate checks the field values on VirtualMachineHost with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
@@ -73,7 +745,7 @@ type VirtualMachineHostMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
 func (m VirtualMachineHostMultiError) Error() string {
-	var msgs []string
+	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
 	}
@@ -139,6 +811,326 @@ var _ interface {
 	ErrorName() string
 } = VirtualMachineHostValidationError{}
 
+// Validate checks the field values on DataVolumeTemplate with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *DataVolumeTemplate) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on DataVolumeTemplate with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// DataVolumeTemplateMultiError, or nil if none found.
+func (m *DataVolumeTemplate) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *DataVolumeTemplate) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if all {
+		switch v := interface{}(m.GetMetadata()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, DataVolumeTemplateValidationError{
+					field:  "Metadata",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, DataVolumeTemplateValidationError{
+					field:  "Metadata",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetMetadata()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return DataVolumeTemplateValidationError{
+				field:  "Metadata",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if all {
+		switch v := interface{}(m.GetSpec()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, DataVolumeTemplateValidationError{
+					field:  "Spec",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, DataVolumeTemplateValidationError{
+					field:  "Spec",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetSpec()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return DataVolumeTemplateValidationError{
+				field:  "Spec",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return DataVolumeTemplateMultiError(errors)
+	}
+
+	return nil
+}
+
+// DataVolumeTemplateMultiError is an error wrapping multiple validation errors
+// returned by DataVolumeTemplate.ValidateAll() if the designated constraints
+// aren't met.
+type DataVolumeTemplateMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m DataVolumeTemplateMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m DataVolumeTemplateMultiError) AllErrors() []error { return m }
+
+// DataVolumeTemplateValidationError is the validation error returned by
+// DataVolumeTemplate.Validate if the designated constraints aren't met.
+type DataVolumeTemplateValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e DataVolumeTemplateValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e DataVolumeTemplateValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e DataVolumeTemplateValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e DataVolumeTemplateValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e DataVolumeTemplateValidationError) ErrorName() string {
+	return "DataVolumeTemplateValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e DataVolumeTemplateValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sDataVolumeTemplate.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = DataVolumeTemplateValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = DataVolumeTemplateValidationError{}
+
+// Validate checks the field values on DataVolumeTemplateSpec with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *DataVolumeTemplateSpec) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on DataVolumeTemplateSpec with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// DataVolumeTemplateSpecMultiError, or nil if none found.
+func (m *DataVolumeTemplateSpec) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *DataVolumeTemplateSpec) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if all {
+		switch v := interface{}(m.GetPvc()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, DataVolumeTemplateSpecValidationError{
+					field:  "Pvc",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, DataVolumeTemplateSpecValidationError{
+					field:  "Pvc",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetPvc()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return DataVolumeTemplateSpecValidationError{
+				field:  "Pvc",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if all {
+		switch v := interface{}(m.GetSource()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, DataVolumeTemplateSpecValidationError{
+					field:  "Source",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, DataVolumeTemplateSpecValidationError{
+					field:  "Source",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetSource()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return DataVolumeTemplateSpecValidationError{
+				field:  "Source",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return DataVolumeTemplateSpecMultiError(errors)
+	}
+
+	return nil
+}
+
+// DataVolumeTemplateSpecMultiError is an error wrapping multiple validation
+// errors returned by DataVolumeTemplateSpec.ValidateAll() if the designated
+// constraints aren't met.
+type DataVolumeTemplateSpecMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m DataVolumeTemplateSpecMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m DataVolumeTemplateSpecMultiError) AllErrors() []error { return m }
+
+// DataVolumeTemplateSpecValidationError is the validation error returned by
+// DataVolumeTemplateSpec.Validate if the designated constraints aren't met.
+type DataVolumeTemplateSpecValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e DataVolumeTemplateSpecValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e DataVolumeTemplateSpecValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e DataVolumeTemplateSpecValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e DataVolumeTemplateSpecValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e DataVolumeTemplateSpecValidationError) ErrorName() string {
+	return "DataVolumeTemplateSpecValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e DataVolumeTemplateSpecValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sDataVolumeTemplateSpec.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = DataVolumeTemplateSpecValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = DataVolumeTemplateSpecValidationError{}
+
 // Validate checks the field values on VirtualMachineResourceMetrics with the
 // rules defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
@@ -179,7 +1171,7 @@ type VirtualMachineResourceMetricsMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
 func (m VirtualMachineResourceMetricsMultiError) Error() string {
-	var msgs []string
+	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
 	}
@@ -302,7 +1294,7 @@ type VirtualMachineNetworkMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
 func (m VirtualMachineNetworkMultiError) Error() string {
-	var msgs []string
+	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
 	}
@@ -418,7 +1410,7 @@ type VirtualMachineDiskMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
 func (m VirtualMachineDiskMultiError) Error() string {
-	var msgs []string
+	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
 	}
@@ -483,3 +1475,876 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = VirtualMachineDiskValidationError{}
+
+// Validate checks the field values on
+// VirtualMachineStatus_VolumeSnapshotStatus with the rules defined in the
+// proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *VirtualMachineStatus_VolumeSnapshotStatus) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on
+// VirtualMachineStatus_VolumeSnapshotStatus with the rules defined in the
+// proto definition for this message. If any rules are violated, the result is
+// a list of violation errors wrapped in
+// VirtualMachineStatus_VolumeSnapshotStatusMultiError, or nil if none found.
+func (m *VirtualMachineStatus_VolumeSnapshotStatus) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *VirtualMachineStatus_VolumeSnapshotStatus) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Name
+
+	// no validation rules for Enabled
+
+	if m.Reason != nil {
+		// no validation rules for Reason
+	}
+
+	if len(errors) > 0 {
+		return VirtualMachineStatus_VolumeSnapshotStatusMultiError(errors)
+	}
+
+	return nil
+}
+
+// VirtualMachineStatus_VolumeSnapshotStatusMultiError is an error wrapping
+// multiple validation errors returned by
+// VirtualMachineStatus_VolumeSnapshotStatus.ValidateAll() if the designated
+// constraints aren't met.
+type VirtualMachineStatus_VolumeSnapshotStatusMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m VirtualMachineStatus_VolumeSnapshotStatusMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m VirtualMachineStatus_VolumeSnapshotStatusMultiError) AllErrors() []error { return m }
+
+// VirtualMachineStatus_VolumeSnapshotStatusValidationError is the validation
+// error returned by VirtualMachineStatus_VolumeSnapshotStatus.Validate if the
+// designated constraints aren't met.
+type VirtualMachineStatus_VolumeSnapshotStatusValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e VirtualMachineStatus_VolumeSnapshotStatusValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e VirtualMachineStatus_VolumeSnapshotStatusValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e VirtualMachineStatus_VolumeSnapshotStatusValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e VirtualMachineStatus_VolumeSnapshotStatusValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e VirtualMachineStatus_VolumeSnapshotStatusValidationError) ErrorName() string {
+	return "VirtualMachineStatus_VolumeSnapshotStatusValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e VirtualMachineStatus_VolumeSnapshotStatusValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sVirtualMachineStatus_VolumeSnapshotStatus.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = VirtualMachineStatus_VolumeSnapshotStatusValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = VirtualMachineStatus_VolumeSnapshotStatusValidationError{}
+
+// Validate checks the field values on DataVolumeTemplateSpec_Pvc with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *DataVolumeTemplateSpec_Pvc) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on DataVolumeTemplateSpec_Pvc with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// DataVolumeTemplateSpec_PvcMultiError, or nil if none found.
+func (m *DataVolumeTemplateSpec_Pvc) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *DataVolumeTemplateSpec_Pvc) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if all {
+		switch v := interface{}(m.GetResources()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, DataVolumeTemplateSpec_PvcValidationError{
+					field:  "Resources",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, DataVolumeTemplateSpec_PvcValidationError{
+					field:  "Resources",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetResources()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return DataVolumeTemplateSpec_PvcValidationError{
+				field:  "Resources",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	// no validation rules for StorageClassName
+
+	if len(errors) > 0 {
+		return DataVolumeTemplateSpec_PvcMultiError(errors)
+	}
+
+	return nil
+}
+
+// DataVolumeTemplateSpec_PvcMultiError is an error wrapping multiple
+// validation errors returned by DataVolumeTemplateSpec_Pvc.ValidateAll() if
+// the designated constraints aren't met.
+type DataVolumeTemplateSpec_PvcMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m DataVolumeTemplateSpec_PvcMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m DataVolumeTemplateSpec_PvcMultiError) AllErrors() []error { return m }
+
+// DataVolumeTemplateSpec_PvcValidationError is the validation error returned
+// by DataVolumeTemplateSpec_Pvc.Validate if the designated constraints aren't met.
+type DataVolumeTemplateSpec_PvcValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e DataVolumeTemplateSpec_PvcValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e DataVolumeTemplateSpec_PvcValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e DataVolumeTemplateSpec_PvcValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e DataVolumeTemplateSpec_PvcValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e DataVolumeTemplateSpec_PvcValidationError) ErrorName() string {
+	return "DataVolumeTemplateSpec_PvcValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e DataVolumeTemplateSpec_PvcValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sDataVolumeTemplateSpec_Pvc.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = DataVolumeTemplateSpec_PvcValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = DataVolumeTemplateSpec_PvcValidationError{}
+
+// Validate checks the field values on DataVolumeTemplateSpec_Source with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *DataVolumeTemplateSpec_Source) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on DataVolumeTemplateSpec_Source with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// DataVolumeTemplateSpec_SourceMultiError, or nil if none found.
+func (m *DataVolumeTemplateSpec_Source) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *DataVolumeTemplateSpec_Source) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if m.Http != nil {
+
+		if all {
+			switch v := interface{}(m.GetHttp()).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, DataVolumeTemplateSpec_SourceValidationError{
+						field:  "Http",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, DataVolumeTemplateSpec_SourceValidationError{
+						field:  "Http",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(m.GetHttp()).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return DataVolumeTemplateSpec_SourceValidationError{
+					field:  "Http",
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if m.Blank != nil {
+
+		if all {
+			switch v := interface{}(m.GetBlank()).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, DataVolumeTemplateSpec_SourceValidationError{
+						field:  "Blank",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, DataVolumeTemplateSpec_SourceValidationError{
+						field:  "Blank",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(m.GetBlank()).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return DataVolumeTemplateSpec_SourceValidationError{
+					field:  "Blank",
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return DataVolumeTemplateSpec_SourceMultiError(errors)
+	}
+
+	return nil
+}
+
+// DataVolumeTemplateSpec_SourceMultiError is an error wrapping multiple
+// validation errors returned by DataVolumeTemplateSpec_Source.ValidateAll()
+// if the designated constraints aren't met.
+type DataVolumeTemplateSpec_SourceMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m DataVolumeTemplateSpec_SourceMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m DataVolumeTemplateSpec_SourceMultiError) AllErrors() []error { return m }
+
+// DataVolumeTemplateSpec_SourceValidationError is the validation error
+// returned by DataVolumeTemplateSpec_Source.Validate if the designated
+// constraints aren't met.
+type DataVolumeTemplateSpec_SourceValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e DataVolumeTemplateSpec_SourceValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e DataVolumeTemplateSpec_SourceValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e DataVolumeTemplateSpec_SourceValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e DataVolumeTemplateSpec_SourceValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e DataVolumeTemplateSpec_SourceValidationError) ErrorName() string {
+	return "DataVolumeTemplateSpec_SourceValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e DataVolumeTemplateSpec_SourceValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sDataVolumeTemplateSpec_Source.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = DataVolumeTemplateSpec_SourceValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = DataVolumeTemplateSpec_SourceValidationError{}
+
+// Validate checks the field values on DataVolumeTemplateSpec_Pvc_Resources
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the first error encountered is returned, or nil if
+// there are no violations.
+func (m *DataVolumeTemplateSpec_Pvc_Resources) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on DataVolumeTemplateSpec_Pvc_Resources
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the result is a list of violation errors wrapped in
+// DataVolumeTemplateSpec_Pvc_ResourcesMultiError, or nil if none found.
+func (m *DataVolumeTemplateSpec_Pvc_Resources) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *DataVolumeTemplateSpec_Pvc_Resources) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if all {
+		switch v := interface{}(m.GetRequests()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, DataVolumeTemplateSpec_Pvc_ResourcesValidationError{
+					field:  "Requests",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, DataVolumeTemplateSpec_Pvc_ResourcesValidationError{
+					field:  "Requests",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetRequests()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return DataVolumeTemplateSpec_Pvc_ResourcesValidationError{
+				field:  "Requests",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return DataVolumeTemplateSpec_Pvc_ResourcesMultiError(errors)
+	}
+
+	return nil
+}
+
+// DataVolumeTemplateSpec_Pvc_ResourcesMultiError is an error wrapping multiple
+// validation errors returned by
+// DataVolumeTemplateSpec_Pvc_Resources.ValidateAll() if the designated
+// constraints aren't met.
+type DataVolumeTemplateSpec_Pvc_ResourcesMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m DataVolumeTemplateSpec_Pvc_ResourcesMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m DataVolumeTemplateSpec_Pvc_ResourcesMultiError) AllErrors() []error { return m }
+
+// DataVolumeTemplateSpec_Pvc_ResourcesValidationError is the validation error
+// returned by DataVolumeTemplateSpec_Pvc_Resources.Validate if the designated
+// constraints aren't met.
+type DataVolumeTemplateSpec_Pvc_ResourcesValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e DataVolumeTemplateSpec_Pvc_ResourcesValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e DataVolumeTemplateSpec_Pvc_ResourcesValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e DataVolumeTemplateSpec_Pvc_ResourcesValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e DataVolumeTemplateSpec_Pvc_ResourcesValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e DataVolumeTemplateSpec_Pvc_ResourcesValidationError) ErrorName() string {
+	return "DataVolumeTemplateSpec_Pvc_ResourcesValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e DataVolumeTemplateSpec_Pvc_ResourcesValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sDataVolumeTemplateSpec_Pvc_Resources.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = DataVolumeTemplateSpec_Pvc_ResourcesValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = DataVolumeTemplateSpec_Pvc_ResourcesValidationError{}
+
+// Validate checks the field values on
+// DataVolumeTemplateSpec_Pvc_Resources_Requests with the rules defined in the
+// proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *DataVolumeTemplateSpec_Pvc_Resources_Requests) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on
+// DataVolumeTemplateSpec_Pvc_Resources_Requests with the rules defined in the
+// proto definition for this message. If any rules are violated, the result is
+// a list of violation errors wrapped in
+// DataVolumeTemplateSpec_Pvc_Resources_RequestsMultiError, or nil if none found.
+func (m *DataVolumeTemplateSpec_Pvc_Resources_Requests) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *DataVolumeTemplateSpec_Pvc_Resources_Requests) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Storage
+
+	if len(errors) > 0 {
+		return DataVolumeTemplateSpec_Pvc_Resources_RequestsMultiError(errors)
+	}
+
+	return nil
+}
+
+// DataVolumeTemplateSpec_Pvc_Resources_RequestsMultiError is an error wrapping
+// multiple validation errors returned by
+// DataVolumeTemplateSpec_Pvc_Resources_Requests.ValidateAll() if the
+// designated constraints aren't met.
+type DataVolumeTemplateSpec_Pvc_Resources_RequestsMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m DataVolumeTemplateSpec_Pvc_Resources_RequestsMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m DataVolumeTemplateSpec_Pvc_Resources_RequestsMultiError) AllErrors() []error { return m }
+
+// DataVolumeTemplateSpec_Pvc_Resources_RequestsValidationError is the
+// validation error returned by
+// DataVolumeTemplateSpec_Pvc_Resources_Requests.Validate if the designated
+// constraints aren't met.
+type DataVolumeTemplateSpec_Pvc_Resources_RequestsValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e DataVolumeTemplateSpec_Pvc_Resources_RequestsValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e DataVolumeTemplateSpec_Pvc_Resources_RequestsValidationError) Reason() string {
+	return e.reason
+}
+
+// Cause function returns cause value.
+func (e DataVolumeTemplateSpec_Pvc_Resources_RequestsValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e DataVolumeTemplateSpec_Pvc_Resources_RequestsValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e DataVolumeTemplateSpec_Pvc_Resources_RequestsValidationError) ErrorName() string {
+	return "DataVolumeTemplateSpec_Pvc_Resources_RequestsValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e DataVolumeTemplateSpec_Pvc_Resources_RequestsValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sDataVolumeTemplateSpec_Pvc_Resources_Requests.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = DataVolumeTemplateSpec_Pvc_Resources_RequestsValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = DataVolumeTemplateSpec_Pvc_Resources_RequestsValidationError{}
+
+// Validate checks the field values on DataVolumeTemplateSpec_Source_Http with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the first error encountered is returned, or nil if there are
+// no violations.
+func (m *DataVolumeTemplateSpec_Source_Http) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on DataVolumeTemplateSpec_Source_Http
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the result is a list of violation errors wrapped in
+// DataVolumeTemplateSpec_Source_HttpMultiError, or nil if none found.
+func (m *DataVolumeTemplateSpec_Source_Http) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *DataVolumeTemplateSpec_Source_Http) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Url
+
+	if len(errors) > 0 {
+		return DataVolumeTemplateSpec_Source_HttpMultiError(errors)
+	}
+
+	return nil
+}
+
+// DataVolumeTemplateSpec_Source_HttpMultiError is an error wrapping multiple
+// validation errors returned by
+// DataVolumeTemplateSpec_Source_Http.ValidateAll() if the designated
+// constraints aren't met.
+type DataVolumeTemplateSpec_Source_HttpMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m DataVolumeTemplateSpec_Source_HttpMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m DataVolumeTemplateSpec_Source_HttpMultiError) AllErrors() []error { return m }
+
+// DataVolumeTemplateSpec_Source_HttpValidationError is the validation error
+// returned by DataVolumeTemplateSpec_Source_Http.Validate if the designated
+// constraints aren't met.
+type DataVolumeTemplateSpec_Source_HttpValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e DataVolumeTemplateSpec_Source_HttpValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e DataVolumeTemplateSpec_Source_HttpValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e DataVolumeTemplateSpec_Source_HttpValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e DataVolumeTemplateSpec_Source_HttpValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e DataVolumeTemplateSpec_Source_HttpValidationError) ErrorName() string {
+	return "DataVolumeTemplateSpec_Source_HttpValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e DataVolumeTemplateSpec_Source_HttpValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sDataVolumeTemplateSpec_Source_Http.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = DataVolumeTemplateSpec_Source_HttpValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = DataVolumeTemplateSpec_Source_HttpValidationError{}
+
+// Validate checks the field values on DataVolumeTemplateSpec_Source_Blank with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the first error encountered is returned, or nil if there are
+// no violations.
+func (m *DataVolumeTemplateSpec_Source_Blank) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on DataVolumeTemplateSpec_Source_Blank
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the result is a list of violation errors wrapped in
+// DataVolumeTemplateSpec_Source_BlankMultiError, or nil if none found.
+func (m *DataVolumeTemplateSpec_Source_Blank) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *DataVolumeTemplateSpec_Source_Blank) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if len(errors) > 0 {
+		return DataVolumeTemplateSpec_Source_BlankMultiError(errors)
+	}
+
+	return nil
+}
+
+// DataVolumeTemplateSpec_Source_BlankMultiError is an error wrapping multiple
+// validation errors returned by
+// DataVolumeTemplateSpec_Source_Blank.ValidateAll() if the designated
+// constraints aren't met.
+type DataVolumeTemplateSpec_Source_BlankMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m DataVolumeTemplateSpec_Source_BlankMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m DataVolumeTemplateSpec_Source_BlankMultiError) AllErrors() []error { return m }
+
+// DataVolumeTemplateSpec_Source_BlankValidationError is the validation error
+// returned by DataVolumeTemplateSpec_Source_Blank.Validate if the designated
+// constraints aren't met.
+type DataVolumeTemplateSpec_Source_BlankValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e DataVolumeTemplateSpec_Source_BlankValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e DataVolumeTemplateSpec_Source_BlankValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e DataVolumeTemplateSpec_Source_BlankValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e DataVolumeTemplateSpec_Source_BlankValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e DataVolumeTemplateSpec_Source_BlankValidationError) ErrorName() string {
+	return "DataVolumeTemplateSpec_Source_BlankValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e DataVolumeTemplateSpec_Source_BlankValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sDataVolumeTemplateSpec_Source_Blank.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = DataVolumeTemplateSpec_Source_BlankValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = DataVolumeTemplateSpec_Source_BlankValidationError{}

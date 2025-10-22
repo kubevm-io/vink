@@ -35,74 +35,145 @@ var (
 	_ = sort.Sort
 )
 
-// Validate checks the field values on VirtualMachinePowerStateRequest with the
-// rules defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *VirtualMachinePowerStateRequest) Validate() error {
+// Validate checks the field values on WatchResponse with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *WatchResponse) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on VirtualMachinePowerStateRequest with
-// the rules defined in the proto definition for this message. If any rules
-// are violated, the result is a list of violation errors wrapped in
-// VirtualMachinePowerStateRequestMultiError, or nil if none found.
-func (m *VirtualMachinePowerStateRequest) ValidateAll() error {
+// ValidateAll checks the field values on WatchResponse with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in WatchResponseMultiError, or
+// nil if none found.
+func (m *WatchResponse) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *VirtualMachinePowerStateRequest) validate(all bool) error {
+func (m *WatchResponse) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
 	var errors []error
 
-	if all {
-		switch v := interface{}(m.GetNamespaceName()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, VirtualMachinePowerStateRequestValidationError{
-					field:  "NamespaceName",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
+	for idx, item := range m.GetAdded() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, WatchResponseValidationError{
+						field:  fmt.Sprintf("Added[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, WatchResponseValidationError{
+						field:  fmt.Sprintf("Added[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
 			}
-		case interface{ Validate() error }:
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
 			if err := v.Validate(); err != nil {
-				errors = append(errors, VirtualMachinePowerStateRequestValidationError{
-					field:  "NamespaceName",
+				return WatchResponseValidationError{
+					field:  fmt.Sprintf("Added[%v]", idx),
 					reason: "embedded message failed validation",
 					cause:  err,
-				})
+				}
 			}
 		}
-	} else if v, ok := interface{}(m.GetNamespaceName()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return VirtualMachinePowerStateRequestValidationError{
-				field:  "NamespaceName",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
+
 	}
 
-	// no validation rules for PowerState
+	for idx, item := range m.GetModified() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, WatchResponseValidationError{
+						field:  fmt.Sprintf("Modified[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, WatchResponseValidationError{
+						field:  fmt.Sprintf("Modified[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return WatchResponseValidationError{
+					field:  fmt.Sprintf("Modified[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	for idx, item := range m.GetDeleted() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, WatchResponseValidationError{
+						field:  fmt.Sprintf("Deleted[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, WatchResponseValidationError{
+						field:  fmt.Sprintf("Deleted[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return WatchResponseValidationError{
+					field:  fmt.Sprintf("Deleted[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
 
 	if len(errors) > 0 {
-		return VirtualMachinePowerStateRequestMultiError(errors)
+		return WatchResponseMultiError(errors)
 	}
 
 	return nil
 }
 
-// VirtualMachinePowerStateRequestMultiError is an error wrapping multiple
-// validation errors returned by VirtualMachinePowerStateRequest.ValidateAll()
-// if the designated constraints aren't met.
-type VirtualMachinePowerStateRequestMultiError []error
+// WatchResponseMultiError is an error wrapping multiple validation errors
+// returned by WatchResponse.ValidateAll() if the designated constraints
+// aren't met.
+type WatchResponseMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m VirtualMachinePowerStateRequestMultiError) Error() string {
-	var msgs []string
+func (m WatchResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
 	}
@@ -110,12 +181,11 @@ func (m VirtualMachinePowerStateRequestMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m VirtualMachinePowerStateRequestMultiError) AllErrors() []error { return m }
+func (m WatchResponseMultiError) AllErrors() []error { return m }
 
-// VirtualMachinePowerStateRequestValidationError is the validation error
-// returned by VirtualMachinePowerStateRequest.Validate if the designated
-// constraints aren't met.
-type VirtualMachinePowerStateRequestValidationError struct {
+// WatchResponseValidationError is the validation error returned by
+// WatchResponse.Validate if the designated constraints aren't met.
+type WatchResponseValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -123,24 +193,22 @@ type VirtualMachinePowerStateRequestValidationError struct {
 }
 
 // Field function returns field value.
-func (e VirtualMachinePowerStateRequestValidationError) Field() string { return e.field }
+func (e WatchResponseValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e VirtualMachinePowerStateRequestValidationError) Reason() string { return e.reason }
+func (e WatchResponseValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e VirtualMachinePowerStateRequestValidationError) Cause() error { return e.cause }
+func (e WatchResponseValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e VirtualMachinePowerStateRequestValidationError) Key() bool { return e.key }
+func (e WatchResponseValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e VirtualMachinePowerStateRequestValidationError) ErrorName() string {
-	return "VirtualMachinePowerStateRequestValidationError"
-}
+func (e WatchResponseValidationError) ErrorName() string { return "WatchResponseValidationError" }
 
 // Error satisfies the builtin error interface
-func (e VirtualMachinePowerStateRequestValidationError) Error() string {
+func (e WatchResponseValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -152,14 +220,14 @@ func (e VirtualMachinePowerStateRequestValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sVirtualMachinePowerStateRequest.%s: %s%s",
+		"invalid %sWatchResponse.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = VirtualMachinePowerStateRequestValidationError{}
+var _ error = WatchResponseValidationError{}
 
 var _ interface {
 	Field() string
@@ -167,4 +235,137 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = VirtualMachinePowerStateRequestValidationError{}
+} = WatchResponseValidationError{}
+
+// Validate checks the field values on PowerStateRequest with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *PowerStateRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on PowerStateRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// PowerStateRequestMultiError, or nil if none found.
+func (m *PowerStateRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *PowerStateRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if all {
+		switch v := interface{}(m.GetNamespaceName()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, PowerStateRequestValidationError{
+					field:  "NamespaceName",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, PowerStateRequestValidationError{
+					field:  "NamespaceName",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetNamespaceName()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return PowerStateRequestValidationError{
+				field:  "NamespaceName",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	// no validation rules for PowerState
+
+	if len(errors) > 0 {
+		return PowerStateRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// PowerStateRequestMultiError is an error wrapping multiple validation errors
+// returned by PowerStateRequest.ValidateAll() if the designated constraints
+// aren't met.
+type PowerStateRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m PowerStateRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m PowerStateRequestMultiError) AllErrors() []error { return m }
+
+// PowerStateRequestValidationError is the validation error returned by
+// PowerStateRequest.Validate if the designated constraints aren't met.
+type PowerStateRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e PowerStateRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e PowerStateRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e PowerStateRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e PowerStateRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e PowerStateRequestValidationError) ErrorName() string {
+	return "PowerStateRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e PowerStateRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sPowerStateRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = PowerStateRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = PowerStateRequestValidationError{}

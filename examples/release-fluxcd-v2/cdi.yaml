@@ -1,0 +1,22 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: cdi
+  namespace: vink
+spec:
+  interval: 10m
+  timeout: 10m
+  chart:
+    spec:
+      chart: cdi
+      sourceRef:
+        kind: HelmRepository
+        name: vink
+        namespace: vink
+  targetNamespace: cdi
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3

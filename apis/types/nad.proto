@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package vink.kubevm.io.apis.types;
+
+import "types/metadata.proto";
+
+option go_package = "github.com/kubevm.io/vink/apis/types";
+
+message NetworkAttachmentDefinition {
+    string kind = 1;
+
+    string apiVersion = 2;
+
+    vink.kubevm.io.apis.types.ObjectMeta metadata = 3;
+
+    NetworkAttachmentDefinitionSpec spec = 4;
+}
+
+message NetworkAttachmentDefinitionList {
+    repeated NetworkAttachmentDefinition items = 1;
+}
+
+message NetworkAttachmentDefinitionSpec {
+    string config = 1;
+}

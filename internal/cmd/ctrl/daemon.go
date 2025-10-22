@@ -7,8 +7,11 @@ import (
 	netv1 "github.com/k8snetworkplumbingwg/network-attachment-definition-client/pkg/apis/k8s.cni.cncf.io/v1"
 	kubeovn "github.com/kubeovn/kube-ovn/pkg/apis/kubeovn/v1"
 	"github.com/kubevm.io/vink/config"
-	"github.com/kubevm.io/vink/internal/controller/template"
-	"github.com/kubevm.io/vink/internal/controller/template_instance"
+	"github.com/kubevm.io/vink/internal/controller/virtualmachinetemplate"
+	"github.com/kubevm.io/vink/internal/controller/virtualmachineclaim"
+	poolv1alpha1 "kubevirt.io/api/pool/v1alpha1"
+
+	// "github.com/kubevm.io/vink/internal/controller/template_instance"
 
 	// "github.com/kubevm.io/vink/internal/controller"
 	// "github.com/kubevm.io/vink/internal/controller/node"
@@ -36,6 +39,7 @@ func init() {
 	uruntime.Must(virtv1.AddToScheme(scheme))
 	uruntime.Must(cdiv1beta1.AddToScheme(scheme))
 	uruntime.Must(netv1.AddToScheme(scheme))
+	uruntime.Must(poolv1alpha1.AddToScheme(scheme))
 }
 
 func New(cfg *config.Config) *Daemon {
@@ -55,7 +59,7 @@ func (dm *Daemon) Execute(ctx context.Context) error {
 		Scheme:                  scheme,
 		LeaderElectionID:        "vink.kubevm.io",
 		LeaderElectionNamespace: "vink",
-		LeaderElection:          true,
+		LeaderElection:          false,
 		Metrics: server.Options{
 			BindAddress: "0",
 		},
@@ -69,23 +73,58 @@ func (dm *Daemon) Execute(ctx context.Context) error {
 		return err
 	}
 
-	if err := (&template.Reconciler{
+	if err := (&virtualmachinetemplate.Reconciler{
 		Client: mgr.GetClient(),
 		Cache:  mgr.GetCache(),
 	}).SetupWithManager(mgr); err != nil {
 		return err
 	}
 
-	if err := (&template_instance.Reconciler{
-		Client: mgr.GetClient(),
-		Cache:  mgr.GetCache(),
-	}).SetupWithManager(mgr); err != nil {
-		return err
-	}
+	// if err := (&template_instance.Reconciler{
+	// 	Client: mgr.GetClient(),
+	// 	Cache:  mgr.GetCache(),
+	// }).SetupWithManager(mgr); err != nil {
+	// 	return err
+	// }
 
-	if err := (&template.Webhook{
+	if err := (&virtualmachinetemplate.Webhook{
 		Client: mgr.GetClient(),
 	}).SetupWebhookWithManager(mgr); err != nil {
+		return err
+	}
+
+	// if err := (&virtualmachine.HostReconciler{
+	// 	Client: mgr.GetClient(),
+	// 	Cache:  mgr.GetCache(),
+	// }).SetupWithManager(mgr); err != nil {
+	// 	return err
+	// }
+
+	// if err := (&virtualmachine.NetworkReconciler{
+	// 	Client: mgr.GetClient(),
+	// 	Cache:  mgr.GetCache(),
+	// }).SetupWithManager(mgr); err != nil {
+	// 	return err
+	// }
+
+	// if err := (&virtualmachine.StorageReconciler{
+	// 	Client: mgr.GetClient(),
+	// 	Cache:  mgr.GetCache(),
+	// }).SetupWithManager(mgr); err != nil {
+	// 	return err
+	// }
+
+	// if err := (&virtualmachine.Reconciler{
+	// 	Client: mgr.GetClient(),
+	// 	Cache:  mgr.GetCache(),
+	// }).SetupWithManager(mgr); err != nil {
+	// 	return err
+	// }
+
+	if err := (&virtualmachineclaim.Reconciler{
+		Client: mgr.GetClient(),
+		Cache:  mgr.GetCache(),
+	}).SetupWithManager(mgr); err != nil {
 		return err
 	}
 

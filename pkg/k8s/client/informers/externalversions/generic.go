@@ -53,12 +53,16 @@ func (f *genericInformer) Lister() cache.GenericLister {
 func (f *sharedInformerFactory) ForResource(resource schema.GroupVersionResource) (GenericInformer, error) {
 	switch resource {
 	// Group=vink, Version=v1alpha1
-	case v1alpha1.SchemeGroupVersion.WithResource("templates"):
-		return &genericInformer{resource: resource.GroupResource(), informer: f.Vink().V1alpha1().Templates().Informer()}, nil
 	case v1alpha1.SchemeGroupVersion.WithResource("templateinstances"):
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Vink().V1alpha1().TemplateInstances().Informer()}, nil
+	case v1alpha1.SchemeGroupVersion.WithResource("vinks"):
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Vink().V1alpha1().Vinks().Informer()}, nil
+	case v1alpha1.SchemeGroupVersion.WithResource("virtualmachineclaims"):
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Vink().V1alpha1().VirtualMachineClaims().Informer()}, nil
 	case v1alpha1.SchemeGroupVersion.WithResource("virtualmachinesummaries"):
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Vink().V1alpha1().VirtualMachineSummaries().Informer()}, nil
+	case v1alpha1.SchemeGroupVersion.WithResource("virtualmachinetemplates"):
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Vink().V1alpha1().VirtualMachineTemplates().Informer()}, nil
 
 	}
 

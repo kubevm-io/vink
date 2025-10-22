@@ -16,6 +16,8 @@ grafana:
     server:
       root_url: /grafana
       serve_from_sub_path: true
+    security:
+      allow_embedding: true
 prometheus-node-exporter:
   prometheus:
     monitor:

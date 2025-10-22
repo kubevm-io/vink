@@ -9,18 +9,22 @@ import (
 const (
 	DebugDefault = false
 
+	NamespaceDefault = "vink"
+
 	APIServerHTTPDefault = "9090"
 
 	APIServerGRPCDefault = "9091"
 
 	APIServerGRPCWebDefault = "8080"
 
-	PrometheusDefault = "http://monitoring-monitoring-kube-prometheus.monitoring.svc.cluster.local:9090"
+	// PrometheusDefault = "http://monitoring-monitoring-kube-prometheus.monitoring.svc.cluster.local:9090"
 	// PrometheusDefault = "http://monitoring-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090"
-	// PrometheusDefault = "http://192.168.18.199:31511"
+	PrometheusDefault = "http://172.16.0.155:30031"
+	// PrometheusDefault = "http://192.168.18.133:30031"
 
-	// CephDefault = "https://192.168.18.199:8443"
-	CephDefault = "https://rook-ceph-mgr-dashboard.rook-ceph.svc.cluster.local:8443"
+	CephDefault = "https://172.16.0.155:30033"
+	// CephDefault = "https://192.168.18.133:30033"
+	// CephDefault = "https://rook-ceph-mgr-dashboard.rook-ceph.svc.cluster.local:8443"
 
 	CephUsernameDefault = "admin"
 
@@ -36,6 +40,8 @@ const (
 
 const (
 	Debug = "debug"
+
+	Namespace = "namespace"
 
 	APIServerHTTP = "apiserver-http"
 
@@ -61,6 +67,8 @@ const (
 type Config struct {
 	Debug bool
 
+	Namespace string
+
 	APIServerHTTP int
 
 	APIServerGRPC int
@@ -84,6 +92,7 @@ type Config struct {
 
 func (c *Config) Populate() {
 	c.Debug = viper.GetBool(Debug)
+	c.Namespace = viper.GetString(Namespace)
 	c.APIServerHTTP = viper.GetInt(APIServerHTTP)
 	c.APIServerGRPC = viper.GetInt(APIServerGRPC)
 	c.APIServerGRPCWeb = viper.GetInt(APIServerGRPCWeb)

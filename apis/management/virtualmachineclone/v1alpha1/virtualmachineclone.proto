@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package vink.kubevm.io.apis.management.virtualmachineclone.v1alpha1;
+
+import "google/protobuf/empty.proto";
+import "types/types.proto";
+import "types/virtualmachineclone.proto";
+
+option go_package = "github.com/kubevm.io/vink/apis/management/virtualmachineclone/v1alpha1";
+
+service VirtualMachineCloneManagement {
+    rpc Get(vink.kubevm.io.apis.types.NamespaceName) returns (vink.kubevm.io.apis.types.VirtualMachineClone);
+
+    rpc List(vink.kubevm.io.apis.types.ListRequest) returns (vink.kubevm.io.apis.types.VirtualMachineCloneList);
+
+    rpc Create(vink.kubevm.io.apis.types.VirtualMachineClone) returns (vink.kubevm.io.apis.types.VirtualMachineClone);
+
+    rpc Update(vink.kubevm.io.apis.types.VirtualMachineClone) returns (vink.kubevm.io.apis.types.VirtualMachineClone);
+
+    rpc Delete(vink.kubevm.io.apis.types.NamespaceName) returns (google.protobuf.Empty);
+
+    rpc Watch(vink.kubevm.io.apis.types.WatchRequest) returns (stream WatchResponse);
+}
+
+message WatchResponse {
+    repeated vink.kubevm.io.apis.types.VirtualMachineClone added = 1;
+
+    repeated vink.kubevm.io.apis.types.VirtualMachineClone modified = 2;
+
+    repeated vink.kubevm.io.apis.types.VirtualMachineClone deleted = 3;
+}

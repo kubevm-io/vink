@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package vink.kubevm.io.apis.management.virtualmachinerestore.v1alpha1;
+
+import "google/protobuf/empty.proto";
+import "types/types.proto";
+import "types/virtualmachinerestore.proto";
+
+option go_package = "github.com/kubevm.io/vink/apis/management/virtualmachinerestore/v1alpha1";
+
+service VirtualMachineRestoreManagement {
+    rpc Get(vink.kubevm.io.apis.types.NamespaceName) returns (vink.kubevm.io.apis.types.VirtualMachineRestore);
+
+    rpc List(vink.kubevm.io.apis.types.ListRequest) returns (vink.kubevm.io.apis.types.VirtualMachineRestoreList);
+
+    rpc Create(vink.kubevm.io.apis.types.VirtualMachineRestore) returns (vink.kubevm.io.apis.types.VirtualMachineRestore);
+
+    rpc Update(vink.kubevm.io.apis.types.VirtualMachineRestore) returns (vink.kubevm.io.apis.types.VirtualMachineRestore);
+
+    rpc Delete(vink.kubevm.io.apis.types.NamespaceName) returns (google.protobuf.Empty);
+
+    rpc Watch(vink.kubevm.io.apis.types.WatchRequest) returns (stream WatchResponse);
+}
+
+message WatchResponse {
+    repeated vink.kubevm.io.apis.types.VirtualMachineRestore added = 1;
+
+    repeated vink.kubevm.io.apis.types.VirtualMachineRestore modified = 2;
+
+    repeated vink.kubevm.io.apis.types.VirtualMachineRestore deleted = 3;
+}

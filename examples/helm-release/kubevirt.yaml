@@ -1,0 +1,15 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: kubevirt
+  namespace: vink
+spec:
+  repo: https://kubevm-io.github.io/helm-charts
+  chart: kubevirt
+  targetNamespace: kubevirt
+  createNamespace: true
+  valuesContent: |-
+    kubevirt:
+      configuration:
+        developerConfiguration:
+          useEmulation: true

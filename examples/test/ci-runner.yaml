@@ -15,8 +15,13 @@ spec:
         # url: https://cloud.centos.org/centos/10-stream/images/CentOS-Stream-GenericCloud-10-latest.x86_64.qcow2
         # url: https://chuangtzu.ftp.acc.umu.se/cdimage/cloud/bookworm/latest/debian-12-genericcloud-amd64.qcow2
         url: https://cdimage.debian.org/cdimage/cloud/bookworm/latest/debian-12-genericcloud-amd64.qcow2
-    user:
-      name: root
+    users:
+    - name: root
+      password: dangerous
+      sshKey: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILmJpK7L05UABkE+JL/b5ScWSiWDwHBQUpvtOVF8e/dp
+    - name: hexiaodai
+      password: dangerous
+    - name: hetongxue
       password: dangerous
   compute:
     cpu:

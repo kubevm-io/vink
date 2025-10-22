@@ -6,12 +6,15 @@ import (
 	"math/rand"
 	"sync"
 	"time"
+
 	poolv1alpha1 "kubevirt.io/api/pool/v1alpha1"
 
 	netv1 "github.com/k8snetworkplumbingwg/network-attachment-definition-client/pkg/apis/k8s.cni.cncf.io/v1"
 	kubeovn "github.com/kubeovn/kube-ovn/pkg/apis/kubeovn/v1"
 	"github.com/kubevm.io/vink/pkg/clients"
 	"github.com/kubevm.io/vink/pkg/clients/gvr"
+	"github.com/kubevm.io/vink/pkg/dynamicx"
+	"github.com/kubevm.io/vink/pkg/k8s/apis/vink/v1alpha1"
 	"github.com/kubevm.io/vink/pkg/log"
 	k8sv1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/fields"
@@ -68,6 +71,10 @@ type KubeInformerFactory interface {
 	Event() cache.SharedIndexInformer
 
 	Namespace() cache.SharedIndexInformer
+
+	Template() cache.SharedIndexInformer
+
+	TemplateInstance() cache.SharedIndexInformer
 
 	K8SInformerFactory() informers.SharedInformerFactory
 
@@ -304,6 +311,22 @@ func (f *kubeInformerFactory) Namespace() cache.SharedIndexInformer {
 	return f.getInformer(gvr.From(k8sv1.Namespace{}), func() cache.SharedIndexInformer {
 		lw := cache.NewListWatchFromClient(clients.Clients.KubeRestClient, "namespaces", k8sv1.NamespaceAll, fields.Everything())
 		return cache.NewSharedIndexInformer(lw, &k8sv1.Namespace{}, f.defaultResync, cache.Indexers{})
+	})
+}
+
+func (f *kubeInformerFactory) Template() cache.SharedIndexInformer {
+	gvr, _ := dynamicx.ResolveGVRAndGVK(v1alpha1.VirtualMachineTemplate{})
+	return f.getInformer(gvr, func() cache.SharedIndexInformer {
+		lw := cache.NewListWatchFromClient(clients.Clients.VinkRestClient, "virtualmachinetemplates", k8sv1.NamespaceAll, fields.Everything())
+		return cache.NewSharedIndexInformer(lw, &v1alpha1.VirtualMachineTemplate{}, f.defaultResync, cache.Indexers{})
+	})
+}
+
+func (f *kubeInformerFactory) TemplateInstance() cache.SharedIndexInformer {
+	gvr, _ := dynamicx.ResolveGVRAndGVK(v1alpha1.TemplateInstance{})
+	return f.getInformer(gvr, func() cache.SharedIndexInformer {
+		lw := cache.NewListWatchFromClient(clients.Clients.VinkRestClient, gvr.Resource, k8sv1.NamespaceAll, fields.Everything())
+		return cache.NewSharedIndexInformer(lw, &v1alpha1.TemplateInstance{}, f.defaultResync, cache.Indexers{})
 	})
 }
 

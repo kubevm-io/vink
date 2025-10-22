@@ -1,0 +1,27 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: kubevirt
+  namespace: vink
+spec:
+  interval: 10m
+  timeout: 10m
+  chart:
+    spec:
+      chart: kubevirt
+      sourceRef:
+        kind: HelmRepository
+        name: vink
+        namespace: vink
+  targetNamespace: kubevirt
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    kubevirt:
+      configuration:
+        developerConfiguration:
+          useEmulation: true

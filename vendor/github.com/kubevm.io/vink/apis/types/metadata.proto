@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package vink.kubevm.io.apis.types;
+
+option go_package = "github.com/kubevm.io/vink/apis/types";
+
+message ObjectMeta {
+    string name = 1;
+
+    optional string generateName = 2;
+
+    optional string namespace = 3;
+
+    repeated string finalizers = 4;
+
+    optional string uid = 5;
+
+    optional string resourceVersion = 6;
+
+    optional int64 generation = 7;
+
+    optional string creationTimestamp = 8;
+
+    optional string deletionTimestamp = 9;
+
+    optional int64 deletionGracePeriodSeconds = 10;
+
+    map<string, string> labels = 11;
+
+    map<string, string> annotations = 12;
+}

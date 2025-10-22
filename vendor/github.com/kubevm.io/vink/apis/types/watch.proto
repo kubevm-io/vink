@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package vink.kubevm.io.apis.types;
+
+option go_package = "github.com/kubevm.io/vink/apis/types";
+
+// message WatchResponse {
+//     repeated Template added = 1;
+
+//     repeated Template modified = 2;
+
+//     repeated Template deleted = 3;
+// }

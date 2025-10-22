@@ -2,11 +2,90 @@ syntax = "proto3";
 
 package vink.kubevm.io.apis.types;
 
+import "types/virtualmachineinstance.proto";
+import "types/metadata.proto";
+import "types/types.proto";
+
 option go_package = "github.com/kubevm.io/vink/apis/types";
+
+message VirtualMachine {
+    string kind = 1;
+
+    string apiVersion = 2;
+
+    vink.kubevm.io.apis.types.ObjectMeta metadata = 3;
+
+    VirtualMachineSpec spec = 4;
+
+    VirtualMachineStatus status = 5;
+}
+
+message VirtualMachineSpec {
+    string runStrategy = 1;
+
+    VirtualMachineInstanceTemplateSpec template = 2;
+
+    repeated DataVolumeTemplate dataVolumeTemplates = 3;
+}
+
+message VirtualMachineStatus {
+    message VolumeSnapshotStatus {
+        string name = 1;
+        bool enabled = 2;
+        optional string reason = 3;
+    }
+
+    bool ready = 1;
+
+    string printableStatus = 2;
+
+    string runStrategy = 3;
+
+    bool created = 4;
+
+    repeated Condition conditions = 5;
+
+    repeated VolumeSnapshotStatus volumeSnapshotStatuses = 6;
+}
+
+message VirtualMachineList {
+    repeated VirtualMachine items = 1;
+}
 
 message VirtualMachineHost {
     string name = 1;
     repeated string ips = 2;
+}
+
+message DataVolumeTemplate {
+    vink.kubevm.io.apis.types.ObjectMeta metadata = 1;
+    DataVolumeTemplateSpec spec = 2;
+}
+
+message DataVolumeTemplateSpec {
+    message Pvc {
+        message Resources {
+            message Requests {
+                string storage = 1;
+            }
+            Requests requests = 1;
+        }
+
+        repeated string accessModes = 1;
+        Resources resources = 2;
+        string storageClassName = 3;
+    }
+    message Source {
+        message Http {
+            string url = 1;
+        }
+        message Blank {}
+        optional Http http = 1;
+        optional Blank blank = 2;
+    }
+
+    Pvc pvc = 1;
+    Source source = 2;
 }
 
 message VirtualMachineResourceMetrics {

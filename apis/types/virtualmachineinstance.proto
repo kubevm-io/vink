@@ -1,0 +1,132 @@
+syntax = "proto3";
+
+package vink.kubevm.io.apis.types;
+
+import "google/protobuf/empty.proto";
+import "types/metadata.proto";
+
+option go_package = "github.com/kubevm.io/vink/apis/types";
+
+message VirtualMachineInstance {
+    string kind = 1;
+
+    string apiVersion = 2;
+
+    vink.kubevm.io.apis.types.ObjectMeta metadata = 3;
+
+    VirtualMachineInstanceSpec spec = 4;
+
+    VirtualMachineInstanceStatus status = 5;
+}
+
+message VirtualMachineInstanceSpec {
+    string architecture = 1;
+
+    DomainSpec domain = 2;
+
+    repeated Network networks = 3;
+
+    repeated Volume volumes = 4;
+}
+
+message DomainSpec {
+    Cpu cpu = 1;
+
+    Memory memory = 2;
+
+    Resources resources = 3;
+
+    Devices devices = 4;
+}
+
+message Cpu {
+    uint32 cores = 1;
+
+    uint32 threads = 2;
+
+    optional string model = 3;
+}
+
+message Memory {
+    string guest = 1;
+}
+
+message Resources {
+    Requests requests = 1;
+    Requests limits = 2;
+}
+
+message Requests {
+    string memory = 1;
+    string cpu = 2;
+}
+
+message Devices {
+    repeated Disk disks = 1;
+
+    repeated Interface interfaces = 2;
+}
+
+message Disk {
+    message Disk {
+        string bus = 1;
+    }
+
+    string name = 1;
+
+    optional int32 bootOrder = 2;
+
+    Disk disk = 3;
+}
+
+message Interface {
+    string name = 1;
+
+    optional google.protobuf.Empty bridge = 2;
+
+    optional google.protobuf.Empty masquerade = 3;
+
+    optional google.protobuf.Empty sriov = 4;
+}
+
+message Network {
+    message Multus {
+        string networkName = 1;
+
+        optional bool default = 2;
+    }
+
+    string name = 1;
+
+    optional Multus multus = 2;
+}
+
+message Volume {
+    message DataVolume {
+        string name = 1;
+    }
+
+    message CloudInitNoCloud {
+        optional string userData = 1;
+
+        optional string userDataBase64 = 2;
+    }
+
+    string name = 1;
+
+    optional DataVolume dataVolume = 2;
+
+    optional CloudInitNoCloud cloudInitNoCloud = 3;
+}
+
+message VirtualMachineInstanceStatus {}
+
+message VirtualMachineInstanceList {
+    repeated VirtualMachineInstance items = 1;
+}
+
+message VirtualMachineInstanceTemplateSpec {
+    vink.kubevm.io.apis.types.ObjectMeta metadata = 1;
+
+    VirtualMachineInstanceSpec spec = 2;
+}

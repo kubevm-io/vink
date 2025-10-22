@@ -28,16 +28,24 @@ type FakeVinkV1alpha1 struct {
 	*testing.Fake
 }
 
-func (c *FakeVinkV1alpha1) Templates(namespace string) v1alpha1.TemplateInterface {
-	return &FakeTemplates{c, namespace}
-}
-
 func (c *FakeVinkV1alpha1) TemplateInstances(namespace string) v1alpha1.TemplateInstanceInterface {
 	return &FakeTemplateInstances{c, namespace}
 }
 
+func (c *FakeVinkV1alpha1) Vinks(namespace string) v1alpha1.VinkInterface {
+	return &FakeVinks{c, namespace}
+}
+
+func (c *FakeVinkV1alpha1) VirtualMachineClaims(namespace string) v1alpha1.VirtualMachineClaimInterface {
+	return &FakeVirtualMachineClaims{c, namespace}
+}
+
 func (c *FakeVinkV1alpha1) VirtualMachineSummaries(namespace string) v1alpha1.VirtualMachineSummaryInterface {
 	return &FakeVirtualMachineSummaries{c, namespace}
+}
+
+func (c *FakeVinkV1alpha1) VirtualMachineTemplates(namespace string) v1alpha1.VirtualMachineTemplateInterface {
+	return &FakeVirtualMachineTemplates{c, namespace}
 }
 
 // RESTClient returns a RESTClient that is used to communicate

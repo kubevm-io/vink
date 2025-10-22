@@ -19,7 +19,6 @@ limitations under the License.
 package v1alpha1
 
 import (
-	"context"
 	time "time"
 
 	vinkv1alpha1 "github.com/kubevm.io/vink/pkg/k8s/apis/vink/v1alpha1"

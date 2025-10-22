@@ -18,8 +18,12 @@ limitations under the License.
 
 package v1alpha1
 
-type TemplateExpansion interface{}
-
 type TemplateInstanceExpansion interface{}
 
+type VinkExpansion interface{}
+
+type VirtualMachineClaimExpansion interface{}
+
 type VirtualMachineSummaryExpansion interface{}
+
+type VirtualMachineTemplateExpansion interface{}

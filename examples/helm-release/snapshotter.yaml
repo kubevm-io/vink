@@ -1,0 +1,10 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: snapshotter
+  namespace: vink
+spec:
+  repo: https://kubevm-io.github.io/helm-charts
+  chart: snapshotter
+  targetNamespace: kube-system
+  createNamespace: true

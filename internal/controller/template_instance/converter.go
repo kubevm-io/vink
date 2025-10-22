@@ -3,6 +3,7 @@ package template_instance
 import (
 	"context"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -20,21 +21,33 @@ const (
 	multusDefaultNetworkAnno = "v1.multus-cni.io/default-network"
 
 	cdiStorageBindImmediateAnno = "cdi.kubevirt.io/storage.bind.immediate.requested"
+
+	operatingSystemAnno = "vink.kubevm.io/os"
 )
 
 const (
 	appCreatedByLabel = "app.kubernetes.io/created-by"
 )
 
-func (r *Reconciler) buildVirtualMachineFromTemplate(_ context.Context, tpl *v1alpha1.Template, tplInstance *v1alpha1.TemplateInstance) (*kubevirtv1.VirtualMachine, error) {
+func (r *Reconciler) buildVirtualMachineFromTemplate(_ context.Context, tpl *v1alpha1.VirtualMachineTemplate, tplInstance *v1alpha1.TemplateInstance) (*kubevirtv1.VirtualMachine, error) {
 	var (
-		dvTplResult = buildDataVolumeTemplates(tpl)
+		dvTplResult = buildDataVolumeTemplates(tpl, tplInstance)
 		volumes     = buildVolumes(dvTplResult)
 		disks       = buildDisks(volumes)
 		networks    = buildNetworks(tpl.Spec.Network)
 		ifaces      = buildInterfaces(networks)
+	)
 
+	var (
 		memQty = resource.MustParse(tpl.Spec.Compute.Memory.Size)
+
+		requestMemMi  = float64(memQty.Value()) / (1024 * 1024) / tpl.Spec.Compute.Memory.OvercommitRatio
+		requestMemQty = resource.MustParse(fmt.Sprintf("%.0fMi", requestMemMi))
+		requestCPUQty = resource.MustParse(fmt.Sprintf("%dm", int(float64(tpl.Spec.Compute.Cpu.Cores)*1000/tpl.Spec.Compute.Cpu.OvercommitRatio)))
+
+		limitMemMi  = float64(memQty.Value()) / (1024 * 1024)
+		limitMemQty = resource.MustParse(fmt.Sprintf("%.0fMi", limitMemMi))
+		limitCPUQty = resource.MustParse(fmt.Sprintf("%dm", tpl.Spec.Compute.Cpu.Cores*1000))
 	)
 
 	cloudInitVolume, cloudInitDisk, err := buildCloudInit(tpl)
@@ -44,11 +57,19 @@ func (r *Reconciler) buildVirtualMachineFromTemplate(_ context.Context, tpl *v1a
 	volumes = append(volumes, lo.FromPtr(cloudInitVolume))
 	disks = append(disks, lo.FromPtr(cloudInitDisk))
 
+	osBytes, err := json.Marshal(tpl.Spec.General.Os)
+	if err != nil {
+		return nil, err
+	}
+
 	vm := &kubevirtv1.VirtualMachine{
 		ObjectMeta: metav1.ObjectMeta{
 			Namespace: tplInstance.Namespace,
 			Name:      tplInstance.Name,
 			Labels:    map[string]string{appCreatedByLabel: v1alpha1.GroupVersion.Group},
+			Annotations: map[string]string{
+				operatingSystemAnno: string(osBytes),
+			},
 			OwnerReferences: []metav1.OwnerReference{{
 				APIVersion:         tplInstance.APIVersion,
 				Kind:               tplInstance.Kind,
@@ -73,7 +94,12 @@ func (r *Reconciler) buildVirtualMachineFromTemplate(_ context.Context, tpl *v1a
 						},
 						Resources: kubevirtv1.ResourceRequirements{
 							Requests: corev1.ResourceList{
-								corev1.ResourceMemory: memQty,
+								corev1.ResourceMemory: requestMemQty,
+								corev1.ResourceCPU:    requestCPUQty,
+							},
+							Limits: corev1.ResourceList{
+								corev1.ResourceMemory: limitMemQty,
+								corev1.ResourceCPU:    limitCPUQty,
 							},
 						},
 						Devices: kubevirtv1.Devices{
@@ -96,13 +122,13 @@ type DataVolumeTemplateResult struct {
 	VolumeNameBy map[string]string
 }
 
-func buildDataVolumeTemplates(tpl *v1alpha1.Template) *DataVolumeTemplateResult {
+func buildDataVolumeTemplates(tpl *v1alpha1.VirtualMachineTemplate, tpli *v1alpha1.TemplateInstance) *DataVolumeTemplateResult {
 	result := &DataVolumeTemplateResult{
 		Templates:    make([]kubevirtv1.DataVolumeTemplateSpec, 0, len(tpl.Spec.Storage.DataDisks)+1),
 		VolumeNameBy: make(map[string]string, len(tpl.Spec.Storage.DataDisks)+1),
 	}
 
-	rootDvName := fmt.Sprintf("%s-root", tpl.Name)
+	rootDvName := fmt.Sprintf("%s-root", tpli.Name)
 	result.VolumeNameBy[rootDvName] = "root"
 	result.Templates = append(result.Templates, kubevirtv1.DataVolumeTemplateSpec{
 		ObjectMeta: metav1.ObjectMeta{
@@ -129,7 +155,7 @@ func buildDataVolumeTemplates(tpl *v1alpha1.Template) *DataVolumeTemplateResult 
 
 	for _, disk := range tpl.Spec.Storage.DataDisks {
 		diskID := generateDiskID()
-		dvName := fmt.Sprintf("%s-%s", tpl.Name, diskID)
+		dvName := fmt.Sprintf("%s-%s", tpli.Name, diskID)
 		result.VolumeNameBy[dvName] = diskID
 
 		result.Templates = append(result.Templates, kubevirtv1.DataVolumeTemplateSpec{
@@ -216,7 +242,7 @@ func buildDisks(volumes []kubevirtv1.Volume) []kubevirtv1.Disk {
 	return disks
 }
 
-func buildCloudInit(tpl *v1alpha1.Template) (*kubevirtv1.Volume, *kubevirtv1.Disk, error) {
+func buildCloudInit(tpl *v1alpha1.VirtualMachineTemplate) (*kubevirtv1.Volume, *kubevirtv1.Disk, error) {
 	cloudInitVolume := kubevirtv1.Volume{
 		Name:         "cloud-init",
 		VolumeSource: kubevirtv1.VolumeSource{},
@@ -264,13 +290,33 @@ func buildChpasswdList(users []*v1alpha1.UserSpec) string {
 	return b.String()
 }
 
-func generateDefaultCloudInit(tpl *v1alpha1.Template) (string, error) {
+func buildCloudInitUsers(users []*v1alpha1.UserSpec) []map[string]any {
+	var result []map[string]any
+	for _, user := range users {
+		entry := map[string]any{
+			"name":        user.Name,
+			"lock_passwd": false,
+			// "shell":               "/bin/bash",
+			"ssh-authorized-keys": user.SshKey,
+		}
+		result = append(result, entry)
+	}
+
+	return result
+}
+
+func generateDefaultCloudInit(tpl *v1alpha1.VirtualMachineTemplate) (string, error) {
 	cfg := map[string]any{
 		"ssh_pwauth":   tpl.Spec.Access.Ssh.Enabled,
 		"disable_root": false,
+		"users":        buildCloudInitUsers(tpl.Spec.General.Users),
 		"chpasswd": map[string]any{
-			"list":   buildChpasswdList([]*v1alpha1.UserSpec{tpl.Spec.General.User}),
+			"list":   buildChpasswdList(tpl.Spec.General.Users),
 			"expire": false,
+		},
+		"manage_resolv_conf": true,
+		"resolv_conf": map[string]any{
+			"nameservers": []string{"8.8.8.8", "1.1.1.1"},
 		},
 		"runcmd": []string{
 			"dhclient -r && dhclient",

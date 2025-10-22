@@ -1,0 +1,45 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: kube-ovn
+  namespace: vink
+spec:
+  repo: https://kubevm-io.github.io/helm-charts
+  chart: kube-ovn
+  targetNamespace: kube-system
+  createNamespace: true
+  valuesContent: |-
+    masterNodes: 198.19.249.103
+    masterNodesLabel: node-role.kubernetes.io/control-plane=true
+    cni:
+      configPriority: "00"
+    central:
+      resources:
+        requests:
+          cpu: 10m
+          memory: 64Mi
+    ovn:
+      resources:
+        requests:
+          cpu: 10m
+          memory: 64Mi
+    controller:
+      resources:
+        requests:
+          cpu: 10m
+          memory: 64Mi
+    cni:
+      resources:
+        requests:
+          cpu: 10m
+          memory: 64Mi
+    pinger:
+      resources:
+        requests:
+        cpu: 10m
+        memory: 64Mi
+    monitor:
+      resources:
+        requests:
+          cpu: 10m
+          memory: 64Mi

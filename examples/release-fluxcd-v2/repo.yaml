@@ -1,0 +1,8 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: vink
+  namespace: vink
+spec:
+  url: https://kubevm-io.github.io/helm-charts
+  interval: 10m

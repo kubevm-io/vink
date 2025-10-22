@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package vink.kubevm.io.apis.types;
+
+import "types/metadata.proto";
+
+option go_package = "github.com/kubevm.io/vink/apis/types";
+
+message StorageClass {
+    string kind = 1;
+
+    string apiVersion = 2;
+
+    vink.kubevm.io.apis.types.ObjectMeta metadata = 3;
+
+    map<string, string> parameters = 4;
+
+    string provisioner = 5;
+
+    string reclaimPolicy = 6;
+
+    string volumeBindingMode = 7;
+}
+
+message StorageClassList {
+    repeated StorageClass items = 1;
+}

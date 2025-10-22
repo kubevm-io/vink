@@ -1,0 +1,10 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: multus
+  namespace: vink
+spec:
+  repo: https://kubevm-io.github.io/helm-charts
+  chart: multus
+  targetNamespace: kube-system
+  createNamespace: true

@@ -16,7 +16,7 @@ spec:
         devices:
           disks:
           - disk:
-              bus: virtio
+              bus: virtio2
             name: containerdisk
           - disk:
               bus: virtio
@@ -40,3 +40,4 @@ spec:
 # metadata:
 #   name: my-vm
 # spec: {}
+

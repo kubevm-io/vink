@@ -1,0 +1,55 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: monitoring
+  namespace: vink
+spec:
+  interval: 10m
+  chart:
+    spec:
+      chart: kube-prometheus-stack
+      sourceRef:
+        kind: HelmRepository
+        name: vink
+        namespace: vink
+  targetNamespace: monitoring
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    alertmanager:
+      enabled: false
+
+    kubeStateMetrics:
+      enabled: true
+
+    prometheus:
+      prometheusSpec:
+        serviceMonitorSelectorNilUsesHelmValues: false
+
+    grafana:
+      grafana.ini:
+        auth.anonymous:
+          enabled: true
+          org_role: Viewer
+        http:
+          enable_cors: true
+          allow_from_origin: "*"
+        server:
+          root_url: /grafana
+          serve_from_sub_path: true
+        security:
+          allow_embedding: true
+
+    prometheus-node-exporter:
+      prometheus:
+        monitor:
+          attachMetadata:
+            node: true
+          relabelings:
+          - action: replace
+            sourceLabels: [__meta_kubernetes_node_name]
+            targetLabel: nodename

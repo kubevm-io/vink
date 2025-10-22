@@ -44,6 +44,16 @@ helm upgrade --install --create-namespace rook-ceph-cluster rook-release/rook-ce
     --timeout 600s \
     --debug
 
+echo "Installing Monitor"
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts --force-update
+helm repo update prometheus-community
+helm upgrade --install --create-namespace --namespace monitoring monitoring \
+    prometheus-community/kube-prometheus-stack \
+    -f ${DIR}/monitoring/values.yaml \
+    --wait \
+    --timeout 600s \
+    --debug
+
 echo "Installing Snapshotter"
 kubectl apply -f https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/master/client/config/crd/snapshot.storage.k8s.io_volumesnapshotclasses.yaml
 kubectl apply -f https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/master/client/config/crd/snapshot.storage.k8s.io_volumesnapshotcontents.yaml

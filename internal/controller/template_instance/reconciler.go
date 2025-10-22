@@ -38,7 +38,7 @@ func (r *Reconciler) Reconcile(ctx context.Context, request ctrl.Request) (ctrl.
 		return ctrl.Result{}, nil
 	}
 
-	var tpl v1alpha1.Template
+	var tpl v1alpha1.VirtualMachineTemplate
 	if err := r.Client.Get(ctx, client.ObjectKey{Namespace: tplInstance.Namespace, Name: tplInstance.Spec.Template}, &tpl); err != nil {
 		return ctrl.Result{}, fmt.Errorf("failed to get Template %q in namespace %q for TemplateInstance %q: %w", tplInstance.Spec.Template, tplInstance.Namespace, tplInstance.Name, err)
 	}

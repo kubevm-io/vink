@@ -45,7 +45,8 @@ HELM_NAME ?= chart-vink
 # IMAGE is the image URL for build and push image targets.
 IMAGE_VINK ?= $(REGISTRY)/$(IMAGE_NAME_VINK)
 # Version is the tag to use for build and push image targets.
-VERSION ?= $(shell git describe --tags --abbrev=8)
+# VERSION ?= $(shell git describe --tags --abbrev=8)
+VERSION ?= 0.0.1-dev.2
 ifeq ($(VERSION),)
 VERSION = 0.0.1-$(shell git rev-parse --short=8 HEAD)
 endif

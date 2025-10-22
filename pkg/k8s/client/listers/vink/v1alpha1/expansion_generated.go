@@ -18,14 +18,6 @@ limitations under the License.
 
 package v1alpha1
 
-// TemplateListerExpansion allows custom methods to be added to
-// TemplateLister.
-type TemplateListerExpansion interface{}
-
-// TemplateNamespaceListerExpansion allows custom methods to be added to
-// TemplateNamespaceLister.
-type TemplateNamespaceListerExpansion interface{}
-
 // TemplateInstanceListerExpansion allows custom methods to be added to
 // TemplateInstanceLister.
 type TemplateInstanceListerExpansion interface{}
@@ -34,6 +26,22 @@ type TemplateInstanceListerExpansion interface{}
 // TemplateInstanceNamespaceLister.
 type TemplateInstanceNamespaceListerExpansion interface{}
 
+// VinkListerExpansion allows custom methods to be added to
+// VinkLister.
+type VinkListerExpansion interface{}
+
+// VinkNamespaceListerExpansion allows custom methods to be added to
+// VinkNamespaceLister.
+type VinkNamespaceListerExpansion interface{}
+
+// VirtualMachineClaimListerExpansion allows custom methods to be added to
+// VirtualMachineClaimLister.
+type VirtualMachineClaimListerExpansion interface{}
+
+// VirtualMachineClaimNamespaceListerExpansion allows custom methods to be added to
+// VirtualMachineClaimNamespaceLister.
+type VirtualMachineClaimNamespaceListerExpansion interface{}
+
 // VirtualMachineSummaryListerExpansion allows custom methods to be added to
 // VirtualMachineSummaryLister.
 type VirtualMachineSummaryListerExpansion interface{}
@@ -41,3 +49,11 @@ type VirtualMachineSummaryListerExpansion interface{}
 // VirtualMachineSummaryNamespaceListerExpansion allows custom methods to be added to
 // VirtualMachineSummaryNamespaceLister.
 type VirtualMachineSummaryNamespaceListerExpansion interface{}
+
+// VirtualMachineTemplateListerExpansion allows custom methods to be added to
+// VirtualMachineTemplateLister.
+type VirtualMachineTemplateListerExpansion interface{}
+
+// VirtualMachineTemplateNamespaceListerExpansion allows custom methods to be added to
+// VirtualMachineTemplateNamespaceLister.
+type VirtualMachineTemplateNamespaceListerExpansion interface{}

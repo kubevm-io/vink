@@ -9,29 +9,71 @@ import (
 	"net/url"
 	"time"
 
-	vmv1alpha1 "github.com/kubevm.io/vink/apis/management/virtualmachine/v1alpha1"
-	"github.com/kubevm.io/vink/internal/management/virtualmachine/business"
-	"github.com/kubevm.io/vink/pkg/clients"
-	"github.com/kubevm.io/vink/pkg/log"
-	"golang.org/x/sync/errgroup"
-	"google.golang.org/protobuf/types/known/emptypb"
-	"k8s.io/client-go/rest"
-	"k8s.io/client-go/util/cert"
-
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
+	vmv1alpha1 "github.com/kubevm.io/vink/apis/management/virtualmachine/v1alpha1"
+	"github.com/kubevm.io/vink/apis/types"
+	"github.com/kubevm.io/vink/internal/management/virtualmachine/business"
+	"github.com/kubevm.io/vink/pkg/clients"
+	"github.com/kubevm.io/vink/pkg/dynamicx"
+	"github.com/kubevm.io/vink/pkg/informer"
+	"github.com/kubevm.io/vink/pkg/log"
+	"github.com/kubevm.io/vink/pkg/watcher"
+	"golang.org/x/sync/errgroup"
+	"google.golang.org/protobuf/types/known/emptypb"
+	k8stypes "k8s.io/apimachinery/pkg/types"
+	"k8s.io/client-go/dynamic"
+	"k8s.io/client-go/rest"
+	"k8s.io/client-go/util/cert"
 )
 
-func NewVirtualMachineManagement() vmv1alpha1.VirtualMachineManagementServer {
-	return &virtualMachineManagement{}
+func NewVirtualMachineManagement(kubeInformerFactory informer.KubeInformerFactory, dynamicClient dynamic.Interface) vmv1alpha1.VirtualMachineManagementServer {
+	return &virtualMachineManagement{
+		kubeInformerFactory: kubeInformerFactory,
+		dynamicVm:           dynamicx.NewClient[*types.VirtualMachine](dynamicClient),
+	}
 }
 
 type virtualMachineManagement struct {
+	kubeInformerFactory informer.KubeInformerFactory
+	dynamicVm           *dynamicx.Client[*types.VirtualMachine]
+
 	vmv1alpha1.UnimplementedVirtualMachineManagementServer
 }
 
-func (m *virtualMachineManagement) VirtualMachinePowerState(ctx context.Context, request *vmv1alpha1.VirtualMachinePowerStateRequest) (*emptypb.Empty, error) {
-	return &emptypb.Empty{}, business.VirtualMachinePowerState(ctx, request.NamespaceName, request.PowerState)
+func (m *virtualMachineManagement) Watch(request *types.WatchRequest, server vmv1alpha1.VirtualMachineManagement_WatchServer) error {
+	return watcher.Watch(server.Context(), m.kubeInformerFactory, business.NewVirtualMachineSink(server), &k8stypes.NamespacedName{Namespace: request.Namespace, Name: request.Name})
+}
+
+func (m *virtualMachineManagement) Create(ctx context.Context, request *types.VirtualMachine) (*types.VirtualMachine, error) {
+	return m.dynamicVm.Create(ctx, request)
+}
+
+func (m *virtualMachineManagement) Get(ctx context.Context, request *types.NamespaceName) (*types.VirtualMachine, error) {
+	return m.dynamicVm.Get(ctx, request.Namespace, request.Name)
+}
+
+func (m *virtualMachineManagement) List(ctx context.Context, request *types.ListRequest) (*types.VirtualMachineList, error) {
+	result, err := m.dynamicVm.List(ctx, request.Namespace)
+	if err != nil {
+		return nil, err
+	}
+	return &types.VirtualMachineList{Items: result}, nil
+}
+
+func (m *virtualMachineManagement) Update(ctx context.Context, request *types.VirtualMachine) (*types.VirtualMachine, error) {
+	return m.dynamicVm.Update(ctx, request)
+}
+
+func (m *virtualMachineManagement) Delete(ctx context.Context, request *types.NamespaceName) (*emptypb.Empty, error) {
+	if err := m.dynamicVm.Delete(ctx, request.Namespace, request.Name); err != nil {
+		return nil, err
+	}
+	return &emptypb.Empty{}, nil
+}
+
+func (m *virtualMachineManagement) PowerState(ctx context.Context, request *vmv1alpha1.PowerStateRequest) (*emptypb.Empty, error) {
+	return &emptypb.Empty{}, business.PowerState(ctx, request.NamespaceName, request.PowerState)
 }
 
 func RegisterSerialConsole(router *mux.Router) {
@@ -142,3 +184,91 @@ func generateSerialConsoleTLSConfig(restConfig *rest.Config) *tls.Config {
 	}
 	return &tlsConfig
 }
+
+// func RegisterSerialConsole(router *mux.Router, client kubecli.KubevirtClient) {
+// 	router.PathPrefix(business.SerialConsoleRequestPathTmpl).HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+// 		vars := mux.Vars(request)
+// 		namespace, name := vars["namespace"], vars["name"]
+// 		if namespace == "" || name == "" {
+// 			http.Error(writer, "Missing namespace or name", http.StatusBadRequest)
+// 			return
+// 		}
+
+// 		upgrader := websocket.Upgrader{
+// 			HandshakeTimeout: 15 * time.Second,
+// 			CheckOrigin: func(r *http.Request) bool {
+// 				return true
+// 			},
+// 		}
+
+// 		wsConn, err := upgrader.Upgrade(writer, request, nil)
+// 		if err != nil {
+// 			log.Errorf("Failed to upgrade connection: %v", err)
+// 			return
+// 		}
+// 		defer wsConn.Close()
+
+// 		stdinReader, stdinWriter := io.Pipe()
+// 		stdoutReader, stdoutWriter := io.Pipe()
+// 		resChan := make(chan error, 1)
+
+// 		go func() {
+// 			con, err := client.VirtualMachineInstance(namespace).SerialConsole(name,
+// 				&kvcorev1.SerialConsoleOptions{
+// 					ConnectionTimeout: 5 * time.Minute,
+// 				})
+// 			if err != nil {
+// 				log.Errorf("Failed to connect to VMI console: %v", err)
+// 				resChan <- err
+// 				return
+// 			}
+
+// 			resChan <- con.Stream(kvcorev1.StreamOptions{
+// 				In:  stdinReader,
+// 				Out: stdoutWriter,
+// 			})
+// 		}()
+
+// 		go func() {
+// 			buf := make([]byte, 1024)
+// 			for {
+// 				n, err := stdoutReader.Read(buf)
+// 				if err != nil {
+// 					log.Warnf("Read from console error: %v", err)
+// 					break
+// 				}
+// 				err = wsConn.WriteMessage(websocket.BinaryMessage, buf[:n])
+// 				if err != nil {
+// 					log.Warnf("Write to WebSocket error: %v", err)
+// 					break
+// 				}
+// 			}
+// 			_ = wsConn.Close()
+// 		}()
+
+// 		go func() {
+// 			for {
+// 				msgType, data, err := wsConn.ReadMessage()
+// 				if err != nil {
+// 					log.Warnf("Read from WebSocket error: %v", err)
+// 					break
+// 				}
+// 				if msgType != websocket.BinaryMessage {
+// 					log.Warnf("Unsupported WebSocket message type: %v", msgType)
+// 					continue
+// 				}
+// 				_, err = stdinWriter.Write(data)
+// 				if err != nil {
+// 					log.Warnf("Write to console error: %v", err)
+// 					break
+// 				}
+// 			}
+// 			_ = wsConn.Close()
+// 		}()
+
+// 		if err := <-resChan; err != nil {
+// 			log.Errorf("console stream ended with error: %v", err)
+// 			_ = wsConn.WriteMessage(websocket.TextMessage, []byte("console stream error: "+err.Error()))
+// 		}
+// 	})
+// }

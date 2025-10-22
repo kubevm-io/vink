@@ -16,6 +16,17 @@ helm.push.%:
 	$(eval CHARTS_NAME := $(COMMAND))
 	@helm push temp/$(CHARTS_NAME)-$(VERSION).tgz $(OCI_REGISTRY)
 
+.PHONY: helm.push.charts
+helm.push.charts: ## Push charts to OCI registry
+helm.push.charts:
+	@$(LOG_TARGET)
+	@helm push examples/charts/cdi-0.0.1.tgz $(OCI_REGISTRY)
+	@helm push examples/charts/kubevirt-0.0.1.tgz $(OCI_REGISTRY)
+	@helm push examples/charts/kube-ovn-2.0.0.tgz $(OCI_REGISTRY)
+	@helm push examples/charts/kube-prometheus-stack-78.2.0.tgz $(OCI_REGISTRY)
+	@helm push examples/charts/rook-ceph-cluster-v1.18.2.tgz $(OCI_REGISTRY)
+	@helm push examples/charts/rook-ceph-v1.18.2.tgz $(OCI_REGISTRY)
+
 ##@ Helm
 
 .PHONY: helm.release

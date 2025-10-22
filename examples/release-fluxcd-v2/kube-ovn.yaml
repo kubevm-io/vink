@@ -1,0 +1,57 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: kube-ovn
+  namespace: vink
+spec:
+  interval: 10m
+  timeout: 10m
+  chart:
+    spec:
+      chart: kube-ovn
+      sourceRef:
+        kind: HelmRepository
+        name: vink
+        namespace: vink
+  targetNamespace: kube-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    masterNodes: 192.168.205.128
+    masterNodesLabel: node-role.kubernetes.io/control-plane=true
+    cni:
+      configPriority: "00"
+    central:
+      resources:
+        requests:
+          cpu: 10m
+          memory: 64Mi
+    ovn:
+      resources:
+        requests:
+          cpu: 10m
+          memory: 64Mi
+    controller:
+      resources:
+        requests:
+          cpu: 10m
+          memory: 64Mi
+    cni:
+      resources:
+        requests:
+          cpu: 10m
+          memory: 64Mi
+    pinger:
+      resources:
+        requests:
+        cpu: 10m
+        memory: 64Mi
+    monitor:
+      resources:
+        requests:
+          cpu: 10m
+          memory: 64Mi

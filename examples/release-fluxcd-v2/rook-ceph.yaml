@@ -1,0 +1,230 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: rook-ceph
+  namespace: vink
+spec:
+  interval: 10m
+  timeout: 10m
+  chart:
+    spec:
+      chart: rook-ceph
+      sourceRef:
+        kind: HelmRepository
+        name: vink
+        namespace: vink
+  targetNamespace: rook-ceph
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    resources:
+      requests:
+        cpu: "0"
+        memory: "0"
+
+    csi:
+      enableRbdDriver: true
+      enableCephfsDriver: true
+      provisionerReplicas: 1
+      csiRBDProvisionerResource: |
+        - name : csi-provisioner
+          resource:
+            requests:
+              memory: "0"
+              cpu: "0"
+            limits:
+              memory: "0"
+        - name : csi-resizer
+          resource:
+            requests:
+              memory: "0"
+              cpu: "0"
+            limits:
+              memory: "0"
+        - name : csi-attacher
+          resource:
+            requests:
+              memory: "0"
+              cpu: "0"
+            limits:
+              memory: "0"
+        - name : csi-snapshotter
+          resource:
+            requests:
+              memory: "0"
+              cpu: "0"
+            limits:
+              memory: "0"
+        - name : csi-rbdplugin
+          resource:
+            requests:
+              memory: "0"
+              cpu: "0"
+            limits:
+              memory: "0"
+        - name : csi-omap-generator
+          resource:
+            requests:
+              memory: "0"
+              cpu: "0"
+            limits:
+              memory: "0"
+        - name : liveness-prometheus
+          resource:
+            requests:
+              memory: "0"
+              cpu: "0"
+            limits:
+              memory: "0"
+
+      # -- CEPH CSI RBD plugin resource requirement list
+      # @default -- see values.yaml
+      csiRBDPluginResource: |
+        - name : driver-registrar
+          resource:
+            requests:
+              memory: "0"
+              cpu: "0"
+            limits:
+              memory: "0"
+        - name : csi-rbdplugin
+          resource:
+            requests:
+              memory: "0"
+              cpu: "0"
+            limits:
+              memory: "0"
+        - name : liveness-prometheus
+          resource:
+            requests:
+              memory: "0"
+              cpu: "0"
+            limits:
+              memory: "0"
+
+      # -- CEPH CSI CephFS provisioner resource requirement list
+      # @default -- see values.yaml
+      csiCephFSProvisionerResource: |
+        - name : csi-provisioner
+          resource:
+            requests:
+              memory: "0"
+              cpu: "0"
+            limits:
+              memory: "0"
+        - name : csi-resizer
+          resource:
+            requests:
+              memory: "0"
+              cpu: "0"
+            limits:
+              memory: "0"
+        - name : csi-attacher
+          resource:
+            requests:
+              memory: "0"
+              cpu: "0"
+            limits:
+              memory: "0"
+        - name : csi-snapshotter
+          resource:
+            requests:
+              memory: "0"
+              cpu: "0"
+            limits:
+              memory: "0"
+        - name : csi-cephfsplugin
+          resource:
+            requests:
+              memory: "0"
+              cpu: "0"
+            limits:
+              memory: "0"
+        - name : liveness-prometheus
+          resource:
+            requests:
+              memory: "0"
+              cpu: "0"
+            limits:
+              memory: "0"
+
+      # -- CEPH CSI CephFS plugin resource requirement list
+      # @default -- see values.yaml
+      csiCephFSPluginResource: |
+        - name : driver-registrar
+          resource:
+            requests:
+              memory: "0"
+              cpu: "0"
+            limits:
+              memory: "0"
+        - name : csi-cephfsplugin
+          resource:
+            requests:
+              memory: "0"
+              cpu: "0"
+            limits:
+              memory: "0"
+        - name : liveness-prometheus
+          resource:
+            requests:
+              memory: "0"
+              cpu: "0"
+            limits:
+              memory: "0"
+
+      # -- CEPH CSI NFS provisioner resource requirement list
+      # @default -- see values.yaml
+      csiNFSProvisionerResource: |
+        - name : csi-provisioner
+          resource:
+            requests:
+              memory: "0"
+              cpu: "0"
+            limits:
+              memory: "0"
+        - name : csi-nfsplugin
+          resource:
+            requests:
+              memory: "0"
+              cpu: "0"
+            limits:
+              memory: "0"
+        - name : csi-attacher
+          resource:
+            requests:
+              memory: "0"
+              cpu: "0"
+            limits:
+              memory: "0"
+
+      # -- CEPH CSI NFS plugin resource requirement list
+      # @default -- see values.yaml
+      csiNFSPluginResource: |
+        - name : driver-registrar
+          resource:
+            requests:
+              memory: "0"
+              cpu: "0"
+            limits:
+              memory: "0"
+        - name : csi-nfsplugin
+          resource:
+            requests:
+              memory: "0"
+              cpu: "0"
+            limits:
+              memory: "0"
+
+      serviceMonitor:
+        # -- Enable ServiceMonitor for Ceph CSI drivers
+        enabled: true
+
+    monitoring:
+      # -- Enable monitoring. Requires Prometheus to be pre-installed.
+      # Enabling will also create RBAC rules to allow Operator to create ServiceMonitors
+      enabled: true

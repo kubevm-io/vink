@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package vink.kubevm.io.apis.types;
+
+import "types/metadata.proto";
+import "types/types.proto";
+
+option go_package = "github.com/kubevm.io/vink/apis/types";
+
+message VirtualMachineClone {
+    string kind = 1;
+
+    string apiVersion = 2;
+
+    vink.kubevm.io.apis.types.ObjectMeta metadata = 3;
+
+    VirtualMachineCloneSpec spec = 4;
+
+    VirtualMachineCloneStatus status = 5;
+}
+
+message VirtualMachineCloneList {
+    repeated VirtualMachineClone items = 1;
+}
+
+message VirtualMachineCloneSpec {
+    message Reference {
+        string apiGroup = 1;
+        string kind = 2;
+        string name = 3;
+    }
+    Reference source = 1;
+    Reference target = 2;
+}
+
+message VirtualMachineCloneStatus {
+    string phase = 1;
+    string targetName = 2;
+    repeated vink.kubevm.io.apis.types.Condition conditions = 3;
+}

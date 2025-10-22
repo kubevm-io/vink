@@ -19,9 +19,6 @@ limitations under the License.
 package versioned
 
 import (
-	"fmt"
-	"net/http"
-
 	vinkv1alpha1 "github.com/kubevm.io/vink/pkg/k8s/client/clientset/versioned/typed/vink/v1alpha1"
 	discovery "k8s.io/client-go/discovery"
 	rest "k8s.io/client-go/rest"

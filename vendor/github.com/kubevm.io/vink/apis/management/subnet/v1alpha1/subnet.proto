@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package vink.kubevm.io.apis.management.subnet.v1alpha1;
+
+import "google/protobuf/empty.proto";
+import "types/types.proto";
+import "types/subnet.proto";
+
+option go_package = "github.com/kubevm.io/vink/apis/management/subnet/v1alpha1";
+
+service SubnetManagement {
+    rpc Get(vink.kubevm.io.apis.types.NamespaceName) returns (vink.kubevm.io.apis.types.Subnet);
+
+    rpc List(vink.kubevm.io.apis.types.ListRequest) returns (vink.kubevm.io.apis.types.SubnetList);
+
+    rpc Create(vink.kubevm.io.apis.types.Subnet) returns (vink.kubevm.io.apis.types.Subnet);
+
+    rpc Update(vink.kubevm.io.apis.types.Subnet) returns (vink.kubevm.io.apis.types.Subnet);
+
+    rpc Delete(vink.kubevm.io.apis.types.NamespaceName) returns (google.protobuf.Empty);
+
+    rpc Watch(vink.kubevm.io.apis.types.WatchRequest) returns (stream WatchResponse);
+}
+
+message WatchResponse {
+    repeated vink.kubevm.io.apis.types.Subnet added = 1;
+
+    repeated vink.kubevm.io.apis.types.Subnet modified = 2;
+
+    repeated vink.kubevm.io.apis.types.Subnet deleted = 3;
+}

@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: vink
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: rook-ceph
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: monitoring
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kubevirt
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cdi

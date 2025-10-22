@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package vink.kubevm.io.apis.management.namespace.v1alpha1;
+
+import "google/protobuf/empty.proto";
+import "types/types.proto";
+import "types/namespace.proto";
+
+option go_package = "github.com/kubevm.io/vink/apis/management/namespace/v1alpha1";
+
+service NamespaceManagement {
+    rpc List(vink.kubevm.io.apis.types.ListRequest) returns (vink.kubevm.io.apis.types.NamespaceList);
+}
